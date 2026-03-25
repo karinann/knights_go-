@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* theme */
+  --dark-green: #4a6741;
+
+  /* backgrounds */
+  --color-bg-page: #8ca071;
+  --color-bg-button: #fffbd2;
+  --color-bg-card: #f5f0e0;
+  --color-shadow:
+
+  /* text */
+  --color-text-heading: #2c3e1f;
+  --color-text-body: #4a6741;
+  --color-text-muted: #c8dbb8;
+  --color-text-light: #f5f0e0;
+  --color-text-signupLink: #405838;
+
+
+  /* feedback */
+  --color-error: #c0392b;
+  --color-border: #8aab6e;
+}
