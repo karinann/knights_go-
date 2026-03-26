@@ -4,8 +4,10 @@ import shared from '@styles/auth.module.css';
 import Image from 'next/image';
 import createClient from 'lib/supabase';
 import styles from './login/page.module.css';
+import Link from 'next/link';
 
 export default function LoginPage() {
+  // const [current state value, function used to update value]
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
@@ -78,10 +80,10 @@ export default function LoginPage() {
 
         <div className={shared.footer}>
           <p>
-            New to Knights Go? <a href="/signup">Create Account</a>
+            New to Knights Go? <Link href="/signup">Create Account</Link>
           </p>
           <p>
-            Registering an organization? <a href="/signup/org">Sign up here</a>
+            Registering an organization? <Link href="/signup/org">Sign up here</Link>
           </p>
         </div>
       </div>
