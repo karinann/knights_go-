@@ -1,0 +1,120 @@
+@import url('https://googleapis.com');
+
+.wrapper {
+  min-height: 100vh;
+  background: #4a6741;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.card {
+  background: #f5f0e0;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 360px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #4a6741;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-family: 'Kavoon', sans-serif;
+  font-size: 22px;
+  color: #2c3e1f;
+  margin: 0 0 4px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #4a6741;
+  font-weight: 600;
+  margin: 0;
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.field label {
+  font-family: 'Kavoon', cursive;
+  display: block;
+  font-size: 12px;
+  color: #4a6741;
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: 0.04em;
+}
+
+.field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1.5px solid #8aab6e;
+  border-radius: 8px;
+  background: #fffdf5;
+  font-size: 14px;
+  color: #2c3e1f;
+  outline: none;
+}
+
+.field input:focus {
+  border-color: #4a6741;
+}
+
+.button {
+  width: 100%;
+  padding: 12px;
+  background: #4a6741;
+  color: #f5f0e0;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  font-size: 13px;
+  color: #c0392b;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 1.25rem;
+}
+
+.footer p {
+  font-size: 12px;
+  color: #5a6e4a;
+  margin: 4px 0;
+}
+
+.footer a {
+  color: #2c3e1f;
+  font-weight: 600;
+  text-decoration: underline;
+}

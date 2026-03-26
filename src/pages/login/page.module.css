@@ -1,0 +1,10 @@
+.forgot {
+  text-align: right;
+  margin-bottom: 1.25rem;
+}
+
+.forgot a {
+  font-size: 12px;
+  color: #4a6741;
+  text-decoration: underline;
+}
