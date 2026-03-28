@@ -1,141 +1,86 @@
-declare namespace cat {
-  type BottomNavigation = Array<{ id: number; label: string; href: string; icon: JSX.Element }>;
-  type Breed = {
-    adaptability: number;
-    affection_level: number;
-    alt_names: '';
-    cfa_url: string;
-    child_friendly: number;
-    country_code: string;
-    country_codes: string;
-    description: string;
-    dog_friendly: number;
-    energy_level: number;
-    experimental: number;
-    grooming: number;
-    hairless: number;
-    health_issues: number;
-    hypoallergenic: number;
-    id: string;
-    indoor: number;
-    intelligence: number;
-    lap: number;
-    life_span: string;
-    name: string;
-    natural: number;
-    origin: string;
-    rare: number;
-    reference_image_id: string;
-    rex: number;
-    shedding_level: number;
-    short_legs: number;
-    social_needs: number;
-    stranger_friendly: number;
-    suppressed_tail: number;
-    temperament: string;
-    vcahospitals_url: string;
-    vetstreet_url: string;
-    vocalisation: number;
-    weight: Weight;
-    wikipedia_url: string;
-  };
-  type Breeds = {
-    adaptability: number;
-    affection_level: number;
-    alt_names: '';
-    cfa_url: string;
-    child_friendly: number;
-    country_code: string;
-    country_codes: string;
-    description: string;
-    dog_friendly: number;
-    energy_level: number;
-    experimental: number;
-    grooming: number;
-    hairless: number;
-    health_issues: number;
-    hypoallergenic: number;
-    id: string;
-    indoor: number;
-    intelligence: number;
-    lap: number;
-    life_span: string;
-    name: string;
-    natural: number;
-    origin: string;
-    rare: number;
-    reference_image_id: string;
-    rex: number;
-    shedding_level: number;
-    short_legs: number;
-    social_needs: number;
-    stranger_friendly: number;
-    suppressed_tail: number;
-    temperament: string;
-    vcahospitals_url: string;
-    vetstreet_url: string;
-    vocalisation: number;
-    weight: Weight;
-    wikipedia_url: string;
-  }[];
-  type Count = {
-    count: string;
-  };
-  type Data = {
-    Boom: string;
-  };
-  type Facts = {
-    data: readonly string[];
-  };
-  type BreedImages = { id: string; url: string; width: number; height: number }[];
-  type FactImage = { id: string; url: string; width: number; height: number };
-  type Headers = Readonly<Record<string, string | boolean>>;
-  type Images = { id: string; url: string; width: number; height: number }[];
-  type Navbar = { id: number; label: string; href: string; external: boolean }[];
-  type Url = string;
-  type Weight = {
-    imperial: string;
-    metric: string;
-  };
+export interface User {
+  id: number;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  avatar_url?: string;
+  mon_url?: string;
+  user_type: 'student' | 'club_rep' | 'admin';
+  created_at: string;
+  experience_level: number;
+  experience_points: number;
+}
 
-  interface CarouselProps {
-    currentBreed: string;
-  }
+export interface Club {
+  id: number;
+  club_name: string;
+  description?: string;
+  category: 'cultural' | 'academic' | 'greek life' | 'special interest' | 'volunteer' | 'other';
+  logo_url?: string;
+  sprite_url?: string;
+  created_at: string;
+  created_by: number;
+  experience_level: number;
+  experience_points: number;
+}
 
-  interface DetailsProps {
-    currentBreed: Breed;
-  }
+export interface Event {
+  id: number;
+  club_id: number;
+  event_name: string;
+  description?: string;
+  event_date: string;
+  longitude: number;
+  latitude: number;
+  base_xp: number;
+  bonus_xp: number;
+  created_at: string;
+}
 
-  interface PageProps {
-    title: string;
-    className?: string;
-    children: React.ReactNode;
-  }
+export interface Membership {
+  membership_id: number;
+  user_id: number;
+  club_id: number;
+  role?: string;
+  joined_at: string;
+}
 
-  interface RatingsProps {
-    count: number;
-  }
+// Input types (stuff sent to API)
+export interface CreateUserInput {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  user_type?: User['user_type'];
+}
 
-  interface SectionProps {
-    className?: string;
-    children: React.ReactNode;
-  }
+export interface UpdateUserInput {
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
+  mon_url?: string;
+}
 
-  interface SelectProps {
-    children: React.ReactNode;
-    selectOnChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-    selected: string;
-    type: string;
-  }
+export interface CreateClubInput {
+  club_name: string;
+  description?: string;
+  category: Club['category'];
+  logo_url?: string;
+  sprite_url?: string;
+}
 
-  interface Toaster {
-    message: string;
-    setToast: (toast: boolean) => void;
-    toast: boolean;
-    type: string;
-  }
+export interface UpdateClubInput {
+  club_name?: string;
+  description?: string;
+  category?: Club['category'];
+  logo_url?: string;
+  sprite_url?: string;
+}
 
-  interface Svg {
-    className?: string;
-  }
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
 }
