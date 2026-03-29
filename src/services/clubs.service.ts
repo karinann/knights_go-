@@ -196,7 +196,7 @@ export class ClubService extends BaseService {
       } = await this.supabase.auth.getSession();
 
       if (sessionError || !session) {
-        throw 'Unauthorized - must be logged in';
+        throw new Error('Unauthorized');
       }
 
       // Get user profile for checking if user has permissions
@@ -207,7 +207,7 @@ export class ClubService extends BaseService {
         .single();
 
       if (userError || !user) {
-        throw 'User profile not found';
+        throw new Error('User profile not found');
       }
 
       // Get club info
@@ -225,7 +225,7 @@ export class ClubService extends BaseService {
         existingClub.created_by !== user.id &&
         user.user_type !== 'admin'
       ) {
-        throw 'You do not have permission to delete this club';
+        throw new Error('You do not have permission to delete this club');
       }
 
       const { error: deleteError } = await this.supabase.from('clubs').delete().eq('id', id);
