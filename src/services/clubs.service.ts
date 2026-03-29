@@ -187,9 +187,10 @@ export class ClubService extends BaseService {
     }
   }
 
-  // Delete club
+  // Delete club; only admins can do so
   async deleteClub(id: number): Promise<void> {
     try {
+      // Confirm user has 'admin' role for deletion
       const {
         data: { session },
         error: sessionError,
@@ -206,6 +207,7 @@ export class ClubService extends BaseService {
         .eq('user_id', session.user.id)
         .single();
 
+      // Failed to get user
       if (userError || !user) {
         throw new Error('User profile not found');
       }
@@ -219,7 +221,7 @@ export class ClubService extends BaseService {
 
       if (clubError) throw clubError;
 
-      // Check if user has permission to update this club
+      // Check if user has permission to update this club (admin)
       if (
         existingClub != null &&
         existingClub.created_by !== user.id &&
@@ -229,6 +231,9 @@ export class ClubService extends BaseService {
       }
 
       const { error: deleteError } = await this.supabase.from('clubs').delete().eq('id', id);
+
+      if (deleteError) throw deleteError;
+
       console.log('Club deleted successfully');
     } catch (error: any) {
       this.handleError(error, 'ClubService.deleteClub');
@@ -281,3 +286,5 @@ export class ClubService extends BaseService {
     }
   }
 }
+// Export singleton instance for reusing across calls
+export const clubService = new ClubService();
