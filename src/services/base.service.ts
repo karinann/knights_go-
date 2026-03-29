@@ -2,13 +2,16 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '../types/database.types'
 
 export abstract class BaseService {
+  protected static supabase: SupabaseClient<Database> = createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+  
   protected supabase: SupabaseClient<Database>
 
   constructor() {
-    this.supabase = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    this.supabase = BaseService.supabase
+
   }
 
   protected handleError(error: any, context: string) {
