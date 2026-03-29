@@ -1,0 +1,283 @@
+import { BaseService } from './base.service';
+import type { Club, ClubInsert, ClubMember, ClubUpdate } from '../types/database.types';
+
+
+export class ClubService extends BaseService {
+  async getAllClubs(limit = 10, offset = 0): Promise<Club[]> {
+    try {
+      let query = this.supabase
+        .from('clubs')
+        .select('*')
+        .range(offset, offset + limit - 1)
+        .order('club_name', { ascending: true });
+      const { data, error } = await query;
+
+      if (error) throw error; // 5. Check for Supabase errors
+      return data || []; // 6. Return data or empty array
+    } catch (error) {
+      this.handleError(error, 'ClubService.getClubs'); // 7. Use base class error handling
+      return []; // return nothing
+    }
+  }
+
+  // Get all clubs by param (category, name). Limits to 10 per
+  async getAllClubsByParam(params?: {
+    category?: Club['category'];
+    club_name?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<Club[]> {
+    try {
+      let query = this.supabase.from('clubs').select('*');
+
+      // Search by category
+      if (params?.category) {
+        query = query.eq('category', params.category);
+      }
+
+      // Search by club name
+      if (params?.club_name) {
+        query = query.ilike('club_name', `%${params.club_name}%`);
+      }
+
+      // Apply pagination
+      const limit = params?.limit || 10;
+      const offset = params?.offset || 0;
+      query = query.range(offset, offset + limit - 1);
+
+      // Order by club name, in ascending order
+      query = query.order('club_name', { ascending: true });
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      // On sucess, return data; error if not
+      return data || [];
+    } catch (error: any) {
+      this.handleError(error, 'ClubService.getAllClubsByParams');
+      return [];
+    }
+  }
+
+  // Get one club by its id
+  async getClubById(id: number): Promise<Club | null> {
+    try {
+      // Select clubs by id - get one club
+      const { data, error } = await this.supabase.from('clubs').select('*').eq('id', id).single();
+
+      if (error) throw error;
+
+      // On sucess, return data; null if not
+      return data;
+    } catch (error: any) {
+      this.handleError(error, 'ClubService.getClubById');
+      return null;
+    }
+  }
+
+  // Create a club
+  async createClub(data: ClubInsert): Promise<Club> {
+    try {
+      // Get current user
+      const {
+        data: { session },
+      } = await this.supabase.auth.getSession();
+      if (!session) throw new Error('Unauthorized');
+
+      // Get user info
+      const { data: user, error: userError } = await this.supabase
+        .from('users')
+        .select('id, user_type')
+        .eq('user_id', session.user.id)
+        .single();
+
+      // if user not found, throuw error
+      if (userError) throw new Error('User not found');
+
+      // Create club
+      const { data: club, error: error } = await this.supabase
+        .from('clubs')
+        .insert({
+          ...data,
+          created_by: user.id,
+          experience_level: 1,
+          experience_points: 0,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Auto-add creator as member
+      const {error: membershipError } = await this.supabase.from('club_memberships').insert({
+        user_id: user.id,
+        club_id: club.id,
+        role: 'admin',
+      });
+
+      // Delete the newly made club if membership failed to apply
+      if (membershipError) {
+        await this.supabase.from('clubs').delete().eq('id', club.id);
+
+      }
+      return club;
+    } catch (error: any) {
+      this.handleError(error, 'ClubService.CreateClub');
+      throw new Error("Failed to create club", error.message);
+    }
+  }
+
+  // Edit club
+  async updateClub(id: number, data: ClubUpdate): Promise<Club> {
+    try {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await this.supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        throw 'Unauthorized - must be logged in';
+      }
+
+      // Get user profile for checking if user has permissions
+      const { data: user, error: userError } = await this.supabase
+        .from('users')
+        .select('id, user_type')
+        .eq('user_id', session.user.id)
+        .single();
+
+      if (userError || !user) {
+        throw 'User profile not found';
+      }
+
+      // Get club info
+      const { data: existingClub, error: clubError } = await this.supabase
+        .from('clubs')
+        .select('created_by')
+        .eq('id', id)
+        .single();
+
+      if (clubError) throw clubError;
+
+      // Check if user has permission to update this club
+      if (
+        existingClub != null &&
+        existingClub.created_by !== user.id &&
+        user.user_type !== 'admin'
+      ) {
+        throw 'You do not have permission to edit this club';
+      }
+
+      // Get club info
+      const { data: updatedClub, error: clubUpdateError } = await this.supabase
+        .from('clubs')
+        .update({
+          ...data,
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (clubUpdateError) throw clubUpdateError;
+      return updatedClub;
+    } catch (error: any) {
+      this.handleError(error, 'ClubService.updateClub');
+      throw new Error('Failed to update club');
+    }
+  }
+
+  // Delete club
+  async deleteClub(id: number): Promise<void> {
+    try {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await this.supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        throw 'Unauthorized - must be logged in';
+      }
+
+      // Get user profile for checking if user has permissions
+      const { data: user, error: userError } = await this.supabase
+        .from('users')
+        .select('id, user_type')
+        .eq('user_id', session.user.id)
+        .single();
+
+      if (userError || !user) {
+        throw 'User profile not found';
+      }
+
+      // Get club info
+      const { data: existingClub, error: clubError } = await this.supabase
+        .from('clubs')
+        .select('created_by')
+        .eq('id', id)
+        .single();
+
+      if (clubError) throw clubError;
+
+      // Check if user has permission to update this club
+      if (
+        existingClub != null &&
+        existingClub.created_by !== user.id &&
+        user.user_type !== 'admin'
+      ) {
+        throw 'You do not have permission to delete this club';
+      }
+
+      const { error: deleteError } = await this.supabase.from('clubs').delete().eq('id', id);
+      console.log('Club deleted successfully');
+    } catch (error: any) {
+      this.handleError(error, 'ClubService.deleteClub');
+    }
+  }
+
+  // Get members of club
+  async getClubMembers(clubId: number, limit: 10, offset = 0): Promise<ClubMember[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('club_memberships')
+        .select(
+          `
+          *,
+          users:user_id (
+            id,
+            first_name,
+            last_name,
+            avatar_url
+          )
+        `,
+        )
+        .eq('club_id', clubId)
+        .range(offset, offset + limit - 1);
+
+      if (error) throw error;
+
+      return data;
+    } catch (error: any) {
+      this.handleError(error, 'ClubService.getClubMembers');
+      return [];
+    }
+  }
+
+  // Get club events
+  async getClubEvents(clubId: number): Promise<any[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('events')
+        .select('*')
+        .eq('club_id', clubId)
+        .order('event_date', { ascending: true });
+
+      if (error) throw error;
+
+      return data;
+    } catch (error: any) {
+      this.handleError(error, 'ClubService.getClubEvents');
+      return [];
+    }
+  }
+}
