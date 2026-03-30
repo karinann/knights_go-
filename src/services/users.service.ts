@@ -1,17 +1,7 @@
 import { BaseService } from './base.service';
 import type { User, UserUpdate } from '../types/database.types';
+import type { RoleWithClub } from '@/types/types';
 
-// For getting all of user's clubs
-export interface RoleWithClub {
-  club: {
-    id: number,
-    club_name: string,
-    description: string | null,
-    category: string,
-    logo_url: string | null
-  }
-  role: string
-}
 
 export class UserService extends BaseService {
 
