@@ -4,7 +4,7 @@ import type { Club, ClubInsert, ClubUpdate } from '../types/database.types';
 
 // Interface for hook options
 export interface UseClubsOptions {
-  limit?: number; // How many users to fetch
+  limit?: number; // How many clubs to fetch
   autoFetch?: boolean; // Whether to fetch automatically
 }
 
@@ -22,7 +22,7 @@ export interface UseClubsReturn {
   deleteClub: (id: number) => Promise<boolean>;
 }
 
-export function useUsers(options: UseClubsOptions = {}): UseClubsReturn {
+export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
   const { limit = 10, autoFetch = true } = options;
 
   // Main states
