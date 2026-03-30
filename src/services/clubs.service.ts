@@ -3,7 +3,7 @@ import type { Club, ClubInsert, ClubMember, ClubUpdate } from '../types/database
 
 
 export class ClubService extends BaseService {
-  async getAllClubs(limit = 10, offset = 0): Promise<Club[]> {
+  async getClubs(limit = 10, offset = 0): Promise<Club[]> {
     try {
       let query = this.supabase
         .from('clubs')
