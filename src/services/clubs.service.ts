@@ -1,7 +1,6 @@
 import { BaseService } from './base.service';
 import type { Club, ClubInsert, ClubMember, ClubUpdate } from '../types/database.types';
 
-
 export class ClubService extends BaseService {
   async getClubs(limit = 10, offset = 0): Promise<Club[]> {
     try {
@@ -88,7 +87,7 @@ export class ClubService extends BaseService {
       // Get user info
       const { data: user, error: userError } = await this.supabase
         .from('users')
-        .select('id, user_type')
+        .select('id')
         .eq('user_id', session.user.id)
         .single();
 
@@ -110,7 +109,7 @@ export class ClubService extends BaseService {
       if (error) throw error;
 
       // Auto-add creator as member
-      const {error: membershipError } = await this.supabase.from('club_memberships').insert({
+      const { error: membershipError } = await this.supabase.from('club_memberships').insert({
         user_id: user.id,
         club_id: club.id,
         role: 'admin',
@@ -119,12 +118,11 @@ export class ClubService extends BaseService {
       // Delete the newly made club if membership failed to apply
       if (membershipError) {
         await this.supabase.from('clubs').delete().eq('id', club.id);
-
       }
       return club;
     } catch (error: any) {
       this.handleError(error, 'ClubService.CreateClub');
-      throw new Error("Failed to create club", error.message);
+      throw new Error('Failed to create club', error.message);
     }
   }
 
@@ -143,7 +141,7 @@ export class ClubService extends BaseService {
       // Get user profile for checking if user has permissions
       const { data: user, error: userError } = await this.supabase
         .from('users')
-        .select('id, user_type')
+        .select('id')
         .eq('user_id', session.user.id)
         .single();
 
@@ -151,25 +149,20 @@ export class ClubService extends BaseService {
         throw 'User profile not found';
       }
 
-      // Get club info
-      const { data: existingClub, error: clubError } = await this.supabase
-        .from('clubs')
-        .select('created_by')
-        .eq('id', id)
-        .single();
+      // Check membership join table for user's role
+      const { data: membership, error: membershipError } = await this.supabase
+        .from('club_memberships')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('club_id', id)
+        .maybeSingle();
 
-      if (clubError) throw clubError;
-
-      // Check if user has permission to update this club
-      if (
-        existingClub != null &&
-        existingClub.created_by !== user.id &&
-        user.user_type !== 'admin'
-      ) {
-        throw 'You do not have permission to edit this club';
+      // if the user is either a club_rep or admin, they can edit the club
+      if (!membership || (membership.role !== 'club_rep' && membership.role !== 'admin')) {
+        throw new Error('You do not have permission to edit this club');
       }
 
-      // Get club info
+      // Update club info
       const { data: updatedClub, error: clubUpdateError } = await this.supabase
         .from('clubs')
         .update({
