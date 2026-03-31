@@ -1,6 +1,6 @@
 import { BaseService } from './base.service';
-import type { Club, ClubInsert, ClubMember, ClubUpdate } from '../types/database.types';
-
+import type { Club, ClubInsert, ClubUpdate } from '../types/database.types';
+import type { ClubMember } from '../types/types'
 export class ClubService extends BaseService {
   async getClubs(limit = 10, offset = 0): Promise<Club[]> {
     try {
@@ -234,7 +234,7 @@ export class ClubService extends BaseService {
   }
 
   // Get members of club
-  async getClubMembers(clubId: number, limit: 10, offset = 0): Promise<ClubMember[]> {
+  async getClubMembers(clubId: number, limit = 10, offset = 0): Promise<ClubMember[]> {
     try {
       const { data, error } = await this.supabase
         .from('club_memberships')
