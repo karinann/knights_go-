@@ -3,7 +3,7 @@ import type { Member, MemberInsert, MemberUpdate } from '../types/database.types
 import type { ClubMember } from '../types/types';
 
 // Membeship class: join/leave/update/getcount
-export class MemberService extends BaseService {
+export class MembershipsService extends BaseService {
   // Join club (params: data: user_id, club_id, role)
   async joinClub(data: MemberInsert): Promise<Member> {
     try {
@@ -127,3 +127,5 @@ export class MemberService extends BaseService {
     }
   }
 }
+
+export const membershipsService = new MembershipsService()
