@@ -43,30 +43,23 @@ export class UserService extends BaseService {
   async updateUser(id: number, data: UserUpdate): Promise<User> {
     try {
 
-      // Ensure users can update only their profile
-      const {
-        data: { session },
-        error: sessionError,
-      } = await this.supabase.auth.getSession();
+      // // Ensure users can update only their profile
+      // const currentUserID = await this.getCurrentUserId();
 
-      if (sessionError || !session) {
-        throw 'Unauthorized - must be logged in';
-      }
+      // // Get user profile for checking if user has permissions
+      // const { data: user, error: userError } = await this.supabase
+      //   .from('users')
+      //   .select('id')
+      //   .eq('id', currentUserID)
+      //   .single();
 
-      // Get user profile for checking if user has permissions
-      const { data: user, error: userError } = await this.supabase
-        .from('users')
-        .select('id')
-        .eq('user_id', session.user.id)
-        .single();
+      // if (userError || !user) {
+      //   throw new Error('User profile not found');
+      // }
 
-      if (userError || !user) {
-        throw new Error('User profile not found');
-      }
-
-      if (user.id !== id) {
-        throw new Error('You can only update your own profile');
-      }
+      // if (user.id !== id) {
+      //   throw new Error('You can only update your own profile');
+      // }
 
       // Update user info
       const { data: updatedUser, error: userUpdateError } = await this.supabase
@@ -89,27 +82,20 @@ export class UserService extends BaseService {
   // Delete User
   async deleteUser(id: number): Promise<void> {
     try {
-      // Confirm user
-      const {
-        data: { session },
-        error: sessionError,
-      } = await this.supabase.auth.getSession();
+      // // Confirm user
+      // const currentUserID = await this.getCurrentUserId();
 
-      if (sessionError || !session) {
-        throw new Error('Unauthorized');
-      }
+      // // Get user profile
+      // const { data: user, error: userError } = await this.supabase
+      //   .from('users')
+      //   .select('id')
+      //   .eq('id', currentUserID)
+      //   .single()
 
-      // Get user profile
-      const { data: user, error: userError } = await this.supabase
-        .from('users')
-        .select('id')
-        .eq('user_id', session.user.id)
-        .single();
-
-      // Failed to get user
-      if (userError || !user) {
-        throw new Error('User profile not found');
-      }
+      // // Failed to get user
+      // if (userError || !user) {
+      //   throw new Error('User profile not found');
+      // }
 
       const { error: deleteError } = await this.supabase.from('users').delete().eq('id', id);
 
@@ -123,6 +109,25 @@ export class UserService extends BaseService {
   // category, and logo_url
   async getMyClubs(userId: number, limit: 10, offset: 0): Promise<RoleWithClub[]> {
     try {
+      // const currentUserID = await this.getCurrentUserId()
+
+      // // Get user profile
+      // const { data: user, error: userError } = await this.supabase
+      //   .from('users')
+      //   .select('id')
+      //   .eq('id', currentUserID)
+      //   .single();
+
+      // // Failed to get user
+      // if (userError || !user) {
+      //   throw new Error('User profile not found');
+      // }
+
+      // if (user.id != userId) {
+      //   throw new Error('You are not the actual user!')
+      // }
+
+
       const { data: memberships, error: membershipError } = await this.supabase
         .from('club_memberships')
         .select(

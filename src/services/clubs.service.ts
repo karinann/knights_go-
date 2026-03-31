@@ -79,16 +79,13 @@ export class ClubService extends BaseService {
   async createClub(data: ClubInsert): Promise<Club> {
     try {
       // Get current user
-      const {
-        data: { session },
-      } = await this.supabase.auth.getSession();
-      if (!session) throw new Error('Unauthorized');
+      const currentUserID = await this.getCurrentUserId()
 
       // Get user info
       const { data: user, error: userError } = await this.supabase
         .from('users')
         .select('id')
-        .eq('user_id', session.user.id)
+        .eq('id', currentUserID)
         .single();
 
       // if user not found, throuw error
@@ -127,40 +124,23 @@ export class ClubService extends BaseService {
   }
 
   // Edit club
-  async updateClub(id: number, data: ClubUpdate): Promise<Club> {
+  async updateClub(clubId: number, data: ClubUpdate): Promise<Club> {
     try {
-      const {
-        data: { session },
-        error: sessionError,
-      } = await this.supabase.auth.getSession();
 
-      if (sessionError || !session) {
-        throw 'Unauthorized - must be logged in';
-      }
-
-      // Get user profile for checking if user has permissions
-      const { data: user, error: userError } = await this.supabase
-        .from('users')
-        .select('id')
-        .eq('user_id', session.user.id)
-        .single();
-
-      if (userError || !user) {
-        throw 'User profile not found';
-      }
+       //const currentUserID = await this.getCurrentUserId();
 
       // Check membership join table for user's role
-      const { data: membership, error: membershipError } = await this.supabase
-        .from('club_memberships')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('club_id', id)
-        .maybeSingle();
+      // const { data: membership, error: membershipError } = await this.supabase
+      //   .from('club_memberships')
+      //   .select('role')
+      //   .eq('user_id', currentUserID)
+      //   .eq('club_id', clubId)
+      //   .maybeSingle();
 
-      // if the user is either a club_rep or admin, they can edit the club
-      if (!membership || (membership.role !== 'club_rep' && membership.role !== 'admin')) {
-        throw new Error('You do not have permission to edit this club');
-      }
+      // // if the user is either a club_rep or admin, they can edit the club
+      // if (!membership || (membership.role !== 'club_rep' && membership.role !== 'admin')) {
+      //   throw new Error('You do not have permission to edit this club');
+      // }
 
       // Update club info
       const { data: updatedClub, error: clubUpdateError } = await this.supabase
@@ -168,7 +148,7 @@ export class ClubService extends BaseService {
         .update({
           ...data,
         })
-        .eq('id', id)
+        .eq('id', clubId)
         .select()
         .single();
 
@@ -181,49 +161,41 @@ export class ClubService extends BaseService {
   }
 
   // Delete club; only admins can do so
-  async deleteClub(id: number): Promise<void> {
+  async deleteClub(clubId: number): Promise<void> {
     try {
-      // Confirm user has 'admin' role for deletion
-      const {
-        data: { session },
-        error: sessionError,
-      } = await this.supabase.auth.getSession();
+      // const currentClubID = await this.getCurrentUserId();
 
-      if (sessionError || !session) {
-        throw new Error('Unauthorized');
-      }
+      // // Get user profile for checking if user has permissions
+      // const { data: user, error: userError } = await this.supabase
+      //   .from('users')
+      //   .select('id, user_type')
+      //   .eq('id', currentClubID)
+      //   .single();
 
-      // Get user profile for checking if user has permissions
-      const { data: user, error: userError } = await this.supabase
-        .from('users')
-        .select('id, user_type')
-        .eq('user_id', session.user.id)
-        .single();
+      // // Failed to get user
+      // if (userError || !user) {
+      //   throw new Error('User profile not found for deleting club');
+      // }
 
-      // Failed to get user
-      if (userError || !user) {
-        throw new Error('User profile not found');
-      }
+      // // Get club info
+      // const { data: existingClub, error: clubError } = await this.supabase
+      //   .from('clubs')
+      //   .select('created_by')
+      //   .eq('id', clubId)
+      //   .single();
 
-      // Get club info
-      const { data: existingClub, error: clubError } = await this.supabase
-        .from('clubs')
-        .select('created_by')
-        .eq('id', id)
-        .single();
+      // if (clubError) throw clubError;
 
-      if (clubError) throw clubError;
+      // // Check if user has permission to update this club (admin)
+      // if (
+      //   existingClub != null &&
+      //   existingClub.created_by !== user.id &&
+      //   user.user_type !== 'admin'
+      // ) {
+      //   throw new Error('You do not have permission to delete this club');
+      // }
 
-      // Check if user has permission to update this club (admin)
-      if (
-        existingClub != null &&
-        existingClub.created_by !== user.id &&
-        user.user_type !== 'admin'
-      ) {
-        throw new Error('You do not have permission to delete this club');
-      }
-
-      const { error: deleteError } = await this.supabase.from('clubs').delete().eq('id', id);
+      const { error: deleteError } = await this.supabase.from('clubs').delete().eq('id', clubId);
 
       if (deleteError) throw deleteError;
 
