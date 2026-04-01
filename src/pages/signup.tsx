@@ -57,8 +57,9 @@ export default function SignupPage() {
       <div className={shared.card}>
         <div className={shared.header}>
           <div className={shared.avatar}>
-            <Image src="/icons/knights-go-logo.png" alt="Knights Go" width={72} height={72} />
+            <Image src="/icons/knights-go-logo.png" alt="Knights Go" width={100} height={100} />
           </div>
+          <p className={shared.subtitle}>Upload Profile Image</p>
           <h1 className={shared.title}>Create Account</h1>
         </div>
 
@@ -92,7 +93,7 @@ export default function SignupPage() {
             <label>Email</label>
             <input
               type="email"
-              placeholder="you@university.edu"
+              placeholder="janesmith@university.edu"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
