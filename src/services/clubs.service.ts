@@ -4,7 +4,7 @@ import type { Club, ClubInsert, ClubMember, ClubUpdate } from '../types/database
 export class ClubService extends BaseService {
   async getClubs(limit = 10, offset = 0): Promise<Club[]> {
     try {
-      let query = this.supabase
+      const query = this.supabase
         .from('clubs')
         .select('*')
         .range(offset, offset + limit - 1)
@@ -95,7 +95,7 @@ export class ClubService extends BaseService {
       if (userError) throw new Error('User not found');
 
       // Create club
-      const { data: club, error: error } = await this.supabase
+      const { data: club, error } = await this.supabase
         .from('clubs')
         .insert({
           ...data,

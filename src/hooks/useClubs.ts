@@ -44,58 +44,51 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
   }, [limit]);
 
   const createClub = useCallback(async (club: ClubInsert): Promise<Club | null> => {
-  try {
-    setError(null)                                    // Clear errors
-    const newClub = await clubService.createClub(club)
-    setClubs(prev => [newClub, ...prev])             // Add to beginning
-    return newClub                                    // Return for component
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'Failed to create club')
-    return null                                       // failure case
-  }
-  }, [])
-
-  const updateClub = useCallback(async(id: number, updates: ClubUpdate): Promise<Club | null> => {
     try {
-      setError(null)
-      const updatedClub = await clubService.updateClub(id, updates)
+      setError(null); // Clear errors
+      const newClub = await clubService.createClub(club);
+      setClubs((prev) => [newClub, ...prev]); // Add to beginning
+      return newClub; // Return for component
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create club');
+      return null; // failure case
+    }
+  }, []);
+
+  const updateClub = useCallback(async (id: number, updates: ClubUpdate): Promise<Club | null> => {
+    try {
+      setError(null);
+      const updatedClub = await clubService.updateClub(id, updates);
 
       // Update only specified club in array
-      setClubs(prev => prev.map(club =>
-        club.id === id ? updatedClub : club
-      ))
+      setClubs((prev) => prev.map((club) => (club.id === id ? updatedClub : club)));
 
-      return updatedClub
-
+      return updatedClub;
     } catch (err) {
-      setError(err instanceof Error ? err.message:
-        "Failed to update club"
-      )
-      return null
+      setError(err instanceof Error ? err.message : 'Failed to update club');
+      return null;
     }
-  }, [])
+  }, []);
 
   const deleteClub = useCallback(async (id: number): Promise<boolean> => {
     try {
-      setError(null)
-      await clubService.deleteClub(id)
+      setError(null);
+      await clubService.deleteClub(id);
 
       // Remove from local state
-      setClubs(prev => prev.filter(club => club.id !== id))
-      return true // deleted success
+      setClubs((prev) => prev.filter((club) => club.id !== id));
+      return true; // deleted success
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete club');
+      return false; // not deleted
     }
-    catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete club")
-      return false // not deleted
-    }
-  }, [])
-
+  }, []);
 
   useEffect(() => {
     if (autoFetch) {
-      fetchClubs()
+      fetchClubs();
     }
-  }, [fetchClubs, autoFetch])  // Runs when function or autoFetch changes
+  }, [fetchClubs, autoFetch]); // Runs when function or autoFetch changes
 
   return {
     clubs,
@@ -104,6 +97,6 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
     refetch: fetchClubs,
     createClub,
     updateClub,
-    deleteClub
-  }
+    deleteClub,
+  };
 }
