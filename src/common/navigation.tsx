@@ -1,32 +1,35 @@
-import { BreedSvg, FactSvg, HomeSvg } from '@svg/index';
-import { DOCS_URL, GITHUB_URL } from '@constants/index';
-
-const bottomNavigation: cat.BottomNavigation = [
+import Image from 'next/image';
+const bottomNavigation = [
   {
     id: 1,
-    label: 'Home',
-    href: '/',
-    icon: <HomeSvg className="w-6 h-6" />,
+    label: 'Profile',
+    href: '/profile',
+    icon: <Image src="/icons/person.png" alt="Profile" width={25} height={25}></Image>,
   },
   {
     id: 2,
-    label: 'Facts',
-    href: '/facts',
-    icon: <FactSvg />,
+    label: 'Events',
+    href: '/events',
+    icon: <Image src="/icons/Calendar.png" alt="Events" width={25} height={25}></Image>,
   },
   {
     id: 3,
-    label: 'Breeds',
-    href: '/breeds',
-    icon: <BreedSvg />,
+    label: 'Home',
+    href: '/home',
+    icon: <Image src="/icons/Home.png" alt="Home" width={25} height={25}></Image>,
+  },
+  {
+    id: 4,
+    label: 'Map',
+    href: '/map',
+    icon: <Image src="/icons/Map pin.png" alt="Map" width={25} height={25}></Image>,
+  },
+  {
+    id: 5,
+    label: 'QR Code',
+    href: '/qr/scan',
+    icon: <Image src="/icons/qr-icon.png" alt="QR Code Scanner" width={25} height={25}></Image>,
   },
 ];
 
-const navBar: cat.Navbar = [
-  { id: 1, label: 'Docs', href: DOCS_URL, external: true },
-  { id: 2, label: 'Github', href: GITHUB_URL, external: true },
-  { id: 3, label: 'Facts', href: '/facts', external: false },
-  { id: 4, label: 'Breeds', href: '/breeds', external: false },
-];
-
-export { bottomNavigation, navBar };
+export { bottomNavigation };
