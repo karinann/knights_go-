@@ -67,14 +67,13 @@
   width: 100%;
   padding: 14px;
   background: var(--color-bg-button);
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
-  color: var(--color-text-body);
+  box-shadow: var(--color-shadow);
+  color: var(--color-text-button);
   border-radius: 8px;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 20px;
   text-align: center;
   text-decoration: none;
-  font-family: Georgia, serif;
+  font-family: var(--font-kavoon);
 }
 
 .signupPrompt,

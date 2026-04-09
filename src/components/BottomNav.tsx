@@ -22,11 +22,15 @@ function BottomNav(): JSX.Element {
               key={links.id}
               href={links.href}
               className={`${styles.link} ${
-                router.pathname === links.href ? styles.primary : styles.secondary
+                links.href === '/qr/scan'
+                  ? styles.qr
+                  : router.pathname === links.href
+                  ? styles.primary
+                  : styles.secondary
               }`}
             >
               {links.icon}
-              <span className={styles.linkName}>{links.label}</span>
+              {links.label && <span className={styles.linkName}>{links.label}</span>}
             </Link>
           ))}
         </div>

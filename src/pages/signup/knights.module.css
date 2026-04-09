@@ -1,0 +1,43 @@
+.previewContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+  min-height: 180px;
+}
+
+.previewImage {
+  object-fit: contain;
+}
+
+.thumbnails {
+  display: flex;
+  justify-content: center;
+  border-radius: 50px;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.thumb,
+.thumbActive {
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+  background: var(--color-bg-card);
+  box-shadow: var(--color-shadow);
+}
+
+.thumb {
+  border: var(--color-bg-input-outline);
+}
+
+.thumbActive {
+  background-color: var(--color-bg-input);
+  border: var(--color-bg-input-outline);
+}
+
+.thumbImage {
+  border-radius: 50%;
+  object-fit: contain;
+  display: block;
+}
