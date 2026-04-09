@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from 'context/AuthContext';
 import createClient from 'lib/supabase';
-import styles from './home/home.module.css';
 import { BottomNav } from '@/components';
+import styles from './home/home.module.css';
 
 interface Event {
   id: number;
@@ -95,10 +95,10 @@ export default function HomePage() {
         {/* top buttons: knight wardrobe, qr code scanner */}
         <div className={styles.topBar}>
           <Link href="/profile/knight" className={styles.iconButton}>
-            <Image src="/icons/closet.png" alt="Closet" width={35} height={35}></Image>
+            <Image src="/icons/closet.png" alt="Closet" width={35} height={35} />
           </Link>
           <Link href="/qr/scan" className={styles.iconButton}>
-            <Image src="/icons/qr-icon.png" alt="QR Code Scanner" width={20} height={20}></Image>
+            <Image src="/icons/qr-icon.png" alt="QR Code Scanner" width={20} height={20} />
           </Link>
         </div>
 
@@ -174,7 +174,7 @@ export default function HomePage() {
         )}
       </div>
 
-      <BottomNav></BottomNav>
+      <BottomNav />
     </div>
   );
 }
