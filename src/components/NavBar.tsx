@@ -4,6 +4,7 @@ import { navBar } from '@common/navigation';
 import { ExternalSvg } from '@svg/index';
 import styles from '@styles/NavBar.module.css';
 
+
 /**
  * It's a function that returns a Navbar
  * @returns A JSX element
