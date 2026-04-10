@@ -5,7 +5,7 @@
 }
 
 .container {
-  display: none;
+  display: block;
 }
 
 @media (min-width: 640px) {
@@ -21,8 +21,8 @@
   width: 100%;
   z-index: 9999;
   border-radius: 1rem 1rem 0 0;
-  background-color: #f4f4f5;
-  border-top: 1px solid #e4e4e7;
+  background-color: #000;
+  border-top: 1px solid #000;
 }
 
 .navigation:dark {
@@ -48,37 +48,21 @@
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
+  color: #e4e4e7;
 }
+
+/*
 
 .primary {
-  color: #0099FF;
-}
-
-.primary:dark {
-  color: #fff9d9;
+  @apply dark:text-[#fff9d9] text-[#0099FF];
 }
 
 .secondary {
-  color: #3C4048;
-}
-
-.secondary:hover {
-  color: #F2DF3A;
-}
-
-.secondary:dark {
-  color: #99A8B2;
-}
-
-.secondary:dark:hover {
-  color: #FEFBF6;
+  @apply dark:text-[#99A8B2] dark:hover:text-[#FEFBF6] text-[#3C4048] hover:text-[#F2DF3A];
 }
 
 .linkName {
-  font-size: 0.75rem;
-  color: #000;
+  @apply text-xs text-[#000] dark:text-[#FEFBF6];
 }
 
-.linkName:dark {
-  color: #FEFBF6;
-}
+*/

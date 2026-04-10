@@ -1,9 +1,10 @@
 .page {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background: #778c5a;
-  padding-bottom: 64px;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  position: relative;
 }
 
 .backdropSection {
@@ -179,12 +180,12 @@
   left: 0;
   right: 0;
   height: 64px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   background: var(--color-bg-card);
   border-top: 1.5px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 0 0.5rem;
   z-index: 100;
 }
 
