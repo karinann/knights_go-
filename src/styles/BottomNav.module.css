@@ -5,25 +5,53 @@
 }
 
 .container {
-  @apply sm:hidden;
+  display: block;
+}
+
+@media (min-width: 640px) {
+  .container {
+    display: block;
+  }
 }
 
 .navigation {
-  @apply fixed bottom-0 w-full rounded-t-2xl bg-[#f4f4f5] border-t dark:bg-[#18181b] dark:border-[#393941];
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   z-index: 9999;
+  border-radius: 1rem 1rem 0 0;
+  background-color: #000;
+  border-top: 1px solid #000;
+}
+
+.navigation:dark {
+  background-color: #18181b;
+  border-top-color: #393941;
 }
 
 .navBox {
-  @apply mx-auto h-16 max-w-md flex items-center justify-around px-6;
+  margin: 0 auto;
+  height: 4rem;
+  max-width: 28rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 1.5rem;
 }
 
 .link {
-  @apply flex h-full w-full flex-col items-center justify-center space-y-1;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: #e4e4e7;
 }
+
+/*
 
 .primary {
   @apply dark:text-[#fff9d9] text-[#0099FF];
@@ -36,3 +64,5 @@
 .linkName {
   @apply text-xs text-[#000] dark:text-[#FEFBF6];
 }
+
+*/

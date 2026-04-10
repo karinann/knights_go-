@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
-import { BottomNav } from '@/components';
+import BottomNav from '@/components';
 import styles from '../../styles/BottomNav.module.css';
 
 // map Component yay; syntax function name (){ return (jsx stuff ); }

@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from 'context/AuthContext';
 import createClient from 'lib/supabase';
-import { BottomNav } from '@/components';
-import styles from './home/home.module.css';
+import BottomNav from '@/components';
+import styles from '../styles/home.module.css';
 
 interface Event {
   id: number;
