@@ -4,7 +4,7 @@ import shared from '@styles/auth.module.css';
 import Image from 'next/image';
 import createClient from 'lib/supabase';
 import Link from 'next/link';
-import styles from './login/page.module.css';
+import styles from '../styles/page.module.css';
 
 export default function LoginPage() {
   // const [current state value, function used to update value]
