@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic';
+import styles from './home/home.module.css';
 
 const MapView = dynamic(() => import('../components/Map/MapView'), {
   ssr: false,
@@ -6,7 +7,7 @@ const MapView = dynamic(() => import('../components/Map/MapView'), {
 
 export default function MapPage() {
   return (
-    <div>
+    <div className={styles.page}>
       <MapView />
     </div>
   );
