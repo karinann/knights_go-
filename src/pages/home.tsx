@@ -94,7 +94,7 @@ export default function HomePage() {
       <div className={styles.backdropSection}>
         {/* top buttons: knight wardrobe, qr code scanner */}
         <div className={styles.topBar}>
-          <Link href="/profile/knight" className={styles.iconButton}>
+          <Link href="/closet" className={styles.iconButton}>
             <Image src="/icons/closet.png" alt="Closet" width={35} height={35} />
           </Link>
           <Link href="/qr/scan" className={styles.iconButton}>
