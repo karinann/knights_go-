@@ -1,9 +1,20 @@
+.page {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
 .container {
   @apply sm:hidden;
 }
 
 .navigation {
   @apply fixed bottom-0 w-full rounded-t-2xl bg-[#f4f4f5] border-t dark:bg-[#18181b] dark:border-[#393941];
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
 }
 
 .navBox {

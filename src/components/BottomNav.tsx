@@ -13,6 +13,10 @@ import styles from '@styles/BottomNav.module.css';
 function BottomNav(): JSX.Element {
   const router = useRouter();
 
+  function getNavLinkStyle(href: string, pathname: string) {
+    return href === pathname ? styles.active : '';
+  }
+
   return (
     <div className={styles.container}>
       <nav className={styles.navigation}>
@@ -21,13 +25,7 @@ function BottomNav(): JSX.Element {
             <Link
               key={links.id}
               href={links.href}
-              className={`${styles.link} ${
-                links.href === '/qr/scan'
-                  ? styles.qr
-                  : router.pathname === links.href
-                  ? styles.primary
-                  : styles.secondary
-              }`}
+              className={`${styles.link} ${getNavLinkStyle(links.href, router.pathname)}`}
             >
               {links.icon}
               {links.label && <span className={styles.linkName}>{links.label}</span>}
