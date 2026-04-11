@@ -126,6 +126,24 @@ export class MembershipsService extends BaseService {
       return null;
     }
   }
+
+  // Get members of club
+  async getClubMembers(clubId: number, limit = 10, offset = 0): Promise<Member[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('club_memberships')
+        .select('*')
+        .eq('club_id', clubId)
+        .range(offset, offset + limit - 1);
+
+      if (error) throw error;
+
+      return data;
+    } catch (error: any) {
+      this.handleError(error, 'ClubService.getClubMembers');
+      return [];
+    }
+  }
 }
 
-export const membershipsService = new MembershipsService()
+export const membershipsService = new MembershipsService();

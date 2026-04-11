@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { userService } from '../services/users.service';
 import type { User, UserUpdate } from '../types/database.types';
-import type { RoleWithClub } from '@/types/types';
 
 // Interface for hook options
 export interface UseUsersOptions {
@@ -20,7 +19,6 @@ export interface UseUsersReturn {
   refetch: () => Promise<void>;
   updateUser: (id: number, updates: UserUpdate) => Promise<User | null>;
   deleteUser: (id: number) => Promise<boolean>;
-
 }
 
 export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
@@ -44,47 +42,40 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
     }
   }, [limit]);
 
-  const updateUser = useCallback(async(id: number, updates: UserUpdate): Promise<User | null> => {
+  const updateUser = useCallback(async (id: number, updates: UserUpdate): Promise<User | null> => {
     try {
-      setError(null)
-      const updatedUser = await userService.updateUser(id, updates)
+      setError(null);
+      const updatedUser = await userService.updateUser(id, updates);
 
       // Update only specified User in array
-      setUsers(prev => prev.map(user =>
-        user.id === id ? updatedUser : user
-      ))
+      setUsers((prev) => prev.map((user) => (user.id === id ? updatedUser : user)));
 
-      return updatedUser
-
+      return updatedUser;
     } catch (err) {
-      setError(err instanceof Error ? err.message:
-        "Failed to update user"
-      )
-      return null
+      setError(err instanceof Error ? err.message : 'Failed to update user');
+      return null;
     }
-  }, [])
+  }, []);
 
   const deleteUser = useCallback(async (id: number): Promise<boolean> => {
     try {
-      setError(null)
-      await userService.deleteUser(id)
+      setError(null);
+      await userService.deleteUser(id);
 
       // Remove from local state
-      setUsers(prev => prev.filter(user => user.id !== id))
-      return true // deleted success
+      setUsers((prev) => prev.filter((user) => user.id !== id));
+      return true; // deleted success
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete user');
+      return false; // not deleted
     }
-    catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete user")
-      return false // not deleted
-    }
-  }, [])
-
+  }, []);
 
   useEffect(() => {
     if (autoFetch) {
-      fetchUsers()
+      fetchUsers();
     }
-  }, [fetchUsers, autoFetch])  // Runs when function or autoFetch changes
+  }, [fetchUsers, autoFetch]); // Runs when function or autoFetch changes
 
   return {
     users,
@@ -92,6 +83,6 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
     error,
     refetch: fetchUsers,
     updateUser,
-    deleteUser
-  }
+    deleteUser,
+  };
 }

@@ -1,10 +1,11 @@
 import { BaseService } from './base.service';
-import type { Club, ClubInsert, ClubUpdate } from '../types/database.types';
-import type { ClubMember } from '../types/types'
+import type { Club, ClubInsert, ClubUpdate, Event } from '../types/database.types';
+import type { SearchClubsParams } from '../types/types';
+
 export class ClubService extends BaseService {
   async getClubs(limit = 10, offset = 0): Promise<Club[]> {
     try {
-      let query = this.supabase
+      const query = this.supabase
         .from('clubs')
         .select('*')
         .range(offset, offset + limit - 1)
@@ -20,12 +21,7 @@ export class ClubService extends BaseService {
   }
 
   // Get all clubs by param (category, name). Limits to 10 per
-  async getAllClubsByParam(params?: {
-    category?: Club['category'];
-    club_name?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<Club[]> {
+  async getAllClubsByParam(params?: SearchClubsParams): Promise<Club[]> {
     try {
       let query = this.supabase.from('clubs').select('*');
 
@@ -79,7 +75,7 @@ export class ClubService extends BaseService {
   async createClub(data: ClubInsert): Promise<Club> {
     try {
       // Get current user
-      const currentUserID = await this.getCurrentUserId()
+      const currentUserID = await this.getCurrentUserId();
 
       // Get user info
       const { data: user, error: userError } = await this.supabase
@@ -92,7 +88,7 @@ export class ClubService extends BaseService {
       if (userError) throw new Error('User not found');
 
       // Create club
-      const { data: club, error: error } = await this.supabase
+      const { data: club, error } = await this.supabase
         .from('clubs')
         .insert({
           ...data,
@@ -126,8 +122,7 @@ export class ClubService extends BaseService {
   // Edit club
   async updateClub(clubId: number, data: ClubUpdate): Promise<Club> {
     try {
-
-       //const currentUserID = await this.getCurrentUserId();
+      // const currentUserID = await this.getCurrentUserId();
 
       // Check membership join table for user's role
       // const { data: membership, error: membershipError } = await this.supabase
@@ -199,42 +194,42 @@ export class ClubService extends BaseService {
 
       if (deleteError) throw deleteError;
 
-      console.log('Club deleted successfully');
+      // console.log('Club deleted successfully');
     } catch (error: any) {
       this.handleError(error, 'ClubService.deleteClub');
     }
   }
 
   // Get members of club
-  async getClubMembers(clubId: number, limit = 10, offset = 0): Promise<ClubMember[]> {
-    try {
-      const { data, error } = await this.supabase
-        .from('club_memberships')
-        .select(
-          `
-          *,
-          users:user_id (
-            id,
-            first_name,
-            last_name,
-            avatar_url
-          )
-        `,
-        )
-        .eq('club_id', clubId)
-        .range(offset, offset + limit - 1);
+  // async getClubMembers(clubId: number, limit = 10, offset = 0): Promise<ClubMember[]> {
+  //   try {
+  //     const { data, error } = await this.supabase
+  //       .from('club_memberships')
+  //       .select(
+  //         `
+  //         *,
+  //         users:user_id (
+  //           id,
+  //           first_name,
+  //           last_name,
+  //           avatar_url
+  //         )
+  //       `,
+  //       )
+  //       .eq('club_id', clubId)
+  //       .range(offset, offset + limit - 1);
 
-      if (error) throw error;
+  //     if (error) throw error;
 
-      return data;
-    } catch (error: any) {
-      this.handleError(error, 'ClubService.getClubMembers');
-      return [];
-    }
-  }
+  //     return data;
+  //   } catch (error: any) {
+  //     this.handleError(error, 'ClubService.getClubMembers');
+  //     return [];
+  //   }
+  // }
 
   // Get club events
-  async getClubEvents(clubId: number): Promise<any[]> {
+  async getClubEvents(clubId: number): Promise<Event[]> {
     try {
       const { data, error } = await this.supabase
         .from('events')
@@ -251,5 +246,6 @@ export class ClubService extends BaseService {
     }
   }
 }
+
 // Export singleton instance for reusing across calls
 export const clubService = new ClubService();
