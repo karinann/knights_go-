@@ -1,8 +1,6 @@
-@import url('https://googleapis.com');
-
 .wrapper {
   min-height: 100vh;
-  background: #4a6741;
+  background: var(--color-bg-page);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10,7 +8,7 @@
 }
 
 .card {
-  background: #f5f0e0;
+  /* background: #f5f0e0; */
   border-radius: 16px;
   padding: 2rem;
   width: 100%;
@@ -23,10 +21,10 @@
 }
 
 .avatar {
-  width: 72px;
-  height: 72px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  background: #4a6741;
+  background: var(--dark-green);
   margin: 0 auto 1rem;
   display: flex;
   align-items: center;
@@ -34,15 +32,15 @@
 }
 
 .title {
-  font-family: 'Kavoon', sans-serif;
-  font-size: 22px;
-  color: #2c3e1f;
+  font-family: var(--font-kavoon);
+  font-size: 30px;
+  color: var(--color-text-heading);
   margin: 0 0 4px;
 }
 
 .subtitle {
   font-size: 13px;
-  color: #4a6741;
+  color: var(--color-text-body);
   font-weight: 600;
   margin: 0;
 }
@@ -52,11 +50,10 @@
 }
 
 .field label {
-  font-family: 'Kavoon', cursive;
+  font-family: var(--font-kavoon);
   display: block;
-  font-size: 12px;
-  color: #4a6741;
-  font-weight: 600;
+  font-size: 16px;
+  color: var(--color-text-body);
   margin-bottom: 4px;
   letter-spacing: 0.04em;
 }
@@ -65,9 +62,10 @@
   width: 100%;
   box-sizing: border-box;
   padding: 10px 12px;
-  border: 1.5px solid #8aab6e;
+  border: var(--color-bg-input-outline);
   border-radius: 8px;
-  background: #fffdf5;
+  background: var(--color-bg-input);
+  box-shadow: var(--color-shadow);
   font-size: 14px;
   color: #2c3e1f;
   outline: none;
@@ -76,18 +74,24 @@
 .field input:focus {
   border-color: #4a6741;
 }
+.field input::placeholder {
+  color: var(--color-text-body);
+  opacity: 0.6;
+}
 
 .button {
   width: 100%;
   padding: 12px;
-  background: #4a6741;
-  color: #f5f0e0;
-  border: none;
+  background: var(--color-bg-button);
+  color: var(--color-text-button);
+  border: var(--color-bg-button-outline);
   border-radius: 8px;
+  box-shadow: var(--color-shadow);
+  font-family: var(--font-kavoon);
   font-size: 15px;
-  font-weight: 600;
+  /* font-weight: 600; */
   cursor: pointer;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
 }
 
 .button:disabled {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-// import createClient from 'lib/supabase';
+import createClient from 'lib/supabase';
 import shared from '@styles/auth.module.css';
 
 export default function SignupPage() {
