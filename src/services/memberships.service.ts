@@ -1,5 +1,5 @@
 import { BaseService } from './base.service';
-import type { Member, MemberInsert } from '../types/database.types';
+import type { Member, MemberInsert } from './index';
 
 // Membeship class: join/leave/update/getcount
 export class MembershipsService extends BaseService {
@@ -19,7 +19,7 @@ export class MembershipsService extends BaseService {
       if (memberError) throw memberError;
 
       return memberData;
-    } catch (err: any) {
+    } catch (err) {
       this.handleError(err, 'MembershipService.joinClub');
       throw new Error('Failed to join club');
     }
@@ -41,7 +41,7 @@ export class MembershipsService extends BaseService {
 
       if (err) throw err;
       return true;
-    } catch (err: any) {
+    } catch (err) {
       this.handleError(err, 'MembershipService.leaveClub');
       return false;
     }
@@ -101,7 +101,7 @@ export class MembershipsService extends BaseService {
 
       if (updateError) throw updateError;
       return newData;
-    } catch (err: any) {
+    } catch (err) {
       this.handleError(err, 'MembershipService.updateMemberRole');
       throw new Error('Failed to update member');
     }
@@ -118,7 +118,7 @@ export class MembershipsService extends BaseService {
       if (error) throw error;
 
       return count;
-    } catch (err: any) {
+    } catch (err) {
       this.handleError(err, 'MembershipService.getMemberCount');
       return null;
     }
@@ -136,7 +136,7 @@ export class MembershipsService extends BaseService {
       if (error) throw error;
 
       return data;
-    } catch (error: any) {
+    } catch (error) {
       this.handleError(error, 'ClubService.getClubMembers');
       return [];
     }

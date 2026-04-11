@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { userService } from '../services/users.service';
-import type { User, UserUpdate } from '../types/database.types';
+import type { User, UserUpdate } from '../services/index';
 
 // Interface for hook options
 export interface UseUsersOptions {

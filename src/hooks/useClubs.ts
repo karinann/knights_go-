@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { clubService } from '../services/clubs.service';
-import type { Club, ClubInsert, ClubUpdate } from '../types/database.types';
+import type { Club, ClubInsert, ClubUpdate } from '../services/index';
 
 // Interface for hook options
 export interface UseClubsOptions {

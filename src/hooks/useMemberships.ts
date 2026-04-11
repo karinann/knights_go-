@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { membershipsService } from '../services/memberships.service';
-import type { Member, MemberInsert } from '../types/database.types';
+import type { Member, MemberInsert } from '../services/index';
 
 // Interface for hook options
 export interface UseMembersOptions {

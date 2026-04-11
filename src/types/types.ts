@@ -1,4 +1,4 @@
-import { Club } from './database.types';
+import { Club } from '../services/index';
 
 // For storing all of user's clubs
 export interface RoleWithClub {

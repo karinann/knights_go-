@@ -1,5 +1,5 @@
 import { BaseService } from './base.service';
-import type { Club, ClubInsert, ClubUpdate, Event } from '../types/database.types';
+import type { Club, ClubInsert, ClubUpdate, Event } from './index';
 import type { SearchClubsParams } from '../types/types';
 
 export class ClubService extends BaseService {
@@ -49,7 +49,7 @@ export class ClubService extends BaseService {
 
       // On sucess, return data; error if not
       return data || [];
-    } catch (error: any) {
+    } catch (error) {
       this.handleError(error, 'ClubService.getAllClubsByParams');
       return [];
     }
@@ -65,7 +65,7 @@ export class ClubService extends BaseService {
 
       // On sucess, return data; null if not
       return data;
-    } catch (error: any) {
+    } catch (error) {
       this.handleError(error, 'ClubService.getClubById');
       return null;
     }
@@ -113,9 +113,9 @@ export class ClubService extends BaseService {
         await this.supabase.from('clubs').delete().eq('id', club.id);
       }
       return club;
-    } catch (error: any) {
-      this.handleError(error, 'ClubService.CreateClub');
-      throw new Error('Failed to create club', error.message);
+    } catch (err) {
+      this.handleError(err, 'ClubService.CreateClub');
+      throw new Error('Failed to create club');
     }
   }
 
@@ -149,7 +149,7 @@ export class ClubService extends BaseService {
 
       if (clubUpdateError) throw clubUpdateError;
       return updatedClub;
-    } catch (error: any) {
+    } catch (error) {
       this.handleError(error, 'ClubService.updateClub');
       throw new Error('Failed to update club');
     }
@@ -195,7 +195,7 @@ export class ClubService extends BaseService {
       if (deleteError) throw deleteError;
 
       // console.log('Club deleted successfully');
-    } catch (error: any) {
+    } catch (error) {
       this.handleError(error, 'ClubService.deleteClub');
     }
   }
@@ -240,7 +240,7 @@ export class ClubService extends BaseService {
       if (error) throw error;
 
       return data;
-    } catch (error: any) {
+    } catch (error) {
       this.handleError(error, 'ClubService.getClubEvents');
       return [];
     }
