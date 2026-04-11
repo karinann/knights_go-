@@ -1,13 +1,11 @@
 import { BaseService } from './base.service';
-import type { Member, MemberInsert, MemberUpdate } from '../types/database.types';
-import type { ClubMember } from '../types/types';
+import type { Member, MemberInsert } from '../types/database.types';
 
 // Membeship class: join/leave/update/getcount
 export class MembershipsService extends BaseService {
   // Join club (params: data: user_id, club_id, role)
   async joinClub(data: MemberInsert): Promise<Member> {
     try {
-
       if (!data.club_id || !data.user_id) {
         throw new Error('Missing club_id or user_id; both are required');
       }
@@ -52,7 +50,6 @@ export class MembershipsService extends BaseService {
   // Checks if a user is a member: true if so, false if not
   async isMember(clubId: number, userId: number): Promise<boolean> {
     try {
-
       const { data, error } = await this.supabase
         .from('club_memberships')
         .select('membership_id')
