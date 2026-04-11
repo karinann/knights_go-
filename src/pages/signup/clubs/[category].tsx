@@ -1,97 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { clubService } from '@/services/clubs.service';
-import type { Club } from '@/types/database.types';
+import { useClubs } from '@/hooks/useClubs';
+import type { Club } from '@/services';
 import type { ClubCategory } from '../clubs';
 import shared from '@styles/auth.module.css';
 import styles from './category.module.css';
-
-const MOCK_CLUBS: Club[] = [
-  {
-    id: 1,
-    club_name: 'Girls Who Code',
-    category: 'Academic',
-    locations: ['UCF'],
-    description: null,
-    created_by: 1,
-    created_at: '',
-    experience_level: 1,
-    experience_points: 0,
-    logo_url: null,
-    member_ids: null,
-    sprite_url: null,
-  },
-  {
-    id: 2,
-    club_name: 'Pre-Med Society',
-    category: 'Academic',
-    locations: ['UCF'],
-    description: null,
-    created_by: 1,
-    created_at: '',
-    experience_level: 1,
-    experience_points: 0,
-    logo_url: null,
-    member_ids: null,
-    sprite_url: null,
-  },
-  {
-    id: 3,
-    club_name: 'Computer Science Club',
-    category: 'Academic',
-    locations: ['UCF'],
-    description: null,
-    created_by: 1,
-    created_at: '',
-    experience_level: 1,
-    experience_points: 0,
-    logo_url: null,
-    member_ids: null,
-    sprite_url: null,
-  },
-  {
-    id: 4,
-    club_name: 'Filipino Student Association',
-    category: 'Cultural',
-    locations: ['UCF'],
-    description: null,
-    created_by: 1,
-    created_at: '',
-    experience_level: 1,
-    experience_points: 0,
-    logo_url: null,
-    member_ids: null,
-    sprite_url: null,
-  },
-  {
-    id: 5,
-    club_name: 'Vietnamese Student Union',
-    category: 'Cultural',
-    locations: ['UCF'],
-    description: null,
-    created_by: 1,
-    created_at: '',
-    experience_level: 1,
-    experience_points: 0,
-    logo_url: null,
-    member_ids: null,
-    sprite_url: null,
-  },
-  {
-    id: 6,
-    club_name: 'Best Buddies',
-    category: 'Volunteer',
-    locations: ['UCF'],
-    description: null,
-    created_by: 1,
-    created_at: '',
-    experience_level: 1,
-    experience_points: 0,
-    logo_url: null,
-    member_ids: null,
-    sprite_url: null,
-  },
-];
 
 const PAGE_SIZE = 20;
 
@@ -104,7 +17,9 @@ export default function ClubCategoryPage() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [offset, setOffset] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [loading, setLoading] = useState<boolean>(false);
+
+  // use the hook with autoFetch off since we control fetching manually
+  const { getAllClubsByParams, loading } = useClubs({ autoFetch: false });
 
   // load existing selections from localStorage
   useEffect(() => {
@@ -124,21 +39,7 @@ export default function ClubCategoryPage() {
   }, [category, search]);
 
   async function fetchClubs(currentOffset: number, reset = false) {
-    setLoading(true);
-
-    // TODO: replace with real service call once db is seeded
-    // filter by current category and search term
-    const filtered = MOCK_CLUBS.filter((c) => c.category === category).filter((c) =>
-      search ? c.club_name.toLowerCase().includes(search.toLowerCase()) : true,
-    );
-
-    setClubs((prev) => (reset ? filtered : [...prev, ...filtered]));
-    setHasMore(false); // no pagination needed for mock data
-    setLoading(false);
-
-    /*
-    setLoading(true);
-    const data = await clubService.getAllClubsByParam({
+    const data = await getAllClubsByParams({
       category: category as Club['category'],
       club_name: search || undefined,
       limit: PAGE_SIZE,
@@ -147,8 +48,6 @@ export default function ClubCategoryPage() {
 
     setClubs((prev) => (reset ? data : [...prev, ...data]));
     setHasMore(data.length === PAGE_SIZE);
-    setLoading(false); 
-    */
   }
 
   function loadMore() {
@@ -163,14 +62,13 @@ export default function ClubCategoryPage() {
 
     const isSelected = selectedIds.includes(club.id);
 
-    let updated;
-    if (isSelected) {
-      updated = all.filter((c) => c.id !== club.id);
-      setSelectedIds((prev) => prev.filter((id) => id !== club.id));
-    } else {
-      updated = [...all, { id: club.id, category }];
-      setSelectedIds((prev) => [...prev, club.id]);
-    }
+    const updated = isSelected
+      ? all.filter((c) => c.id !== club.id)
+      : [...all, { id: club.id, category }];
+
+    setSelectedIds((prev) =>
+      isSelected ? prev.filter((id) => id !== club.id) : [...prev, club.id],
+    );
 
     localStorage.setItem('selectedClubs', JSON.stringify(updated));
   }
@@ -181,7 +79,6 @@ export default function ClubCategoryPage() {
 
   return (
     <main className={styles.page}>
-      {/* header */}
       <div className={styles.header}>
         <button
           type="button"
@@ -201,7 +98,6 @@ export default function ClubCategoryPage() {
         <div style={{ width: 32 }} />
       </div>
 
-      {/* search */}
       <div className={styles.searchWrapper}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className={styles.searchIcon}>
           <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" />
@@ -226,7 +122,6 @@ export default function ClubCategoryPage() {
         )}
       </div>
 
-      {/* club list */}
       <div className={styles.list}>
         {clubs.map((club) => {
           const isSelected = selectedIds.includes(club.id);
@@ -267,7 +162,6 @@ export default function ClubCategoryPage() {
         )}
       </div>
 
-      {/* done button */}
       <div className={styles.footer}>
         {selectedIds.length > 0 && (
           <p className={styles.selectedCount}>

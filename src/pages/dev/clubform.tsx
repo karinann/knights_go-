@@ -1,18 +1,16 @@
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 import { useClubs } from '@/hooks/useClubs';
 import createClient from 'lib/supabase';
-import type { ClubInsert } from '@/types/database.types';
 import shared from '@styles/auth.module.css';
 import styles from './clubform.module.css';
 
 const CATEGORIES = [
-  'Cultural',
-  'Academic',
-  'Greek Life',
-  'Special Interest',
-  'Volunteer',
-  'Other',
+  'cultural',
+  'academic',
+  'greek life',
+  'special interest',
+  'volunteer',
+  'other',
 ] as const;
 
 export default function ClubFormPage() {
@@ -20,7 +18,7 @@ export default function ClubFormPage() {
 
   const [clubName, setClubName] = useState<string>('');
   const [locations, setLocations] = useState<string>('');
-  const [category, setCategory] = useState<string>('Cultural');
+  const [category, setCategory] = useState<string>('cultural');
   const [description, setDescription] = useState<string>('');
   const [success, setSuccess] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);

@@ -32,6 +32,7 @@
   font-size: 20px;
   color: var(--color-text-light);
   margin: 0;
+  text-transform: capitalize;
 }
 
 .searchWrapper {

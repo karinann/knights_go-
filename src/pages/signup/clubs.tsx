@@ -5,12 +5,12 @@ import shared from '@styles/auth.module.css';
 import styles from '@styles/clubs.module.css';
 
 const CATEGORIES = [
-  'Cultural',
-  'Academic',
-  'Greek Life',
-  'Special Interest',
-  'Volunteer',
-  'Other',
+  'cultural',
+  'academic',
+  'greek life',
+  'special interest',
+  'volunteer',
+  'other',
 ] as const;
 
 export type ClubCategory = (typeof CATEGORIES)[number];

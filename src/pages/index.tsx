@@ -2,10 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from '../styles/intro.module.css';
 
-// import Page from '@layouts/Page';
-// import Section from '@layouts/Section';
-// import { Home } from '@components/index';
-
+// Landing Page
 export default function main(): JSX.Element {
   return (
     <main className={styles.wrapper}>
@@ -34,11 +31,4 @@ export default function main(): JSX.Element {
       </div>
     </main>
   );
-  // return (
-  //   <Page title="Home">
-  //     <Section>
-  //       <Home />
-  //     </Section>
-  //   </Page>
-  // );
 }
