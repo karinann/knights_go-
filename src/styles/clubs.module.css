@@ -1,0 +1,74 @@
+.hint {
+  font-size: 13px;
+  color: var(--color-text-body);
+  text-align: center;
+  margin: 0 0 1rem;
+}
+
+.categories {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.categoryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--color-bg-input);
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--color-text-heading);
+}
+
+.categoryRow:hover {
+  border-color: var(--color-primary);
+  background: var(--color-bg-card);
+}
+
+.categoryName {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.categoryRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-body);
+}
+
+.badge {
+  background: var(--color-primary);
+  color: var(--color-text-light);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.confirmSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.selectedCount {
+  font-size: 13px;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin: 0;
+}
+
+.skip {
+  font-size: 13px;
+  color: var(--color-text-body);
+  text-decoration: underline;
+}

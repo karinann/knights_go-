@@ -4,7 +4,7 @@ import Image from 'next/image';
 import createClient from 'lib/supabase';
 import shared from '@styles/auth.module.css';
 import { useAuth } from 'context/AuthContext';
-import styles from '../styles/knights.module.css';
+import styles from '@styles/knights.module.css';
 
 const KNIGHTS = [
   { id: 1, name: 'Knight 1', src: '/icons/knight1.png', src2: '/icons/knight1-cropped.png' },

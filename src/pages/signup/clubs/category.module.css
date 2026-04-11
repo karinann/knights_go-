@@ -1,0 +1,177 @@
+.page {
+  min-height: 100vh;
+  background: var(--color-bg-card);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 100px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: var(--color-bg-page);
+}
+
+.backButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(245, 240, 224, 0.2);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-light);
+}
+
+.title {
+  font-family: var(--font-kavoon);
+  font-size: 20px;
+  color: var(--color-text-light);
+  margin: 0;
+}
+
+.searchWrapper {
+  position: relative;
+  padding: 1rem 1.25rem 0.5rem;
+  background: var(--color-bg-page);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1.9rem;
+  top: 50%;
+  transform: translateY(-20%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 36px;
+  border: 1.5px solid rgba(245, 240, 224, 0.3);
+  border-radius: 8px;
+  background: rgba(245, 240, 224, 0.15);
+  font-size: 14px;
+  color: var(--color-text-light);
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-muted);
+}
+
+.clearSearch {
+  position: absolute;
+  right: 1.9rem;
+  top: 50%;
+  transform: translateY(-20%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  padding: 4px;
+}
+
+.list {
+  flex: 1;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clubRow,
+.clubRowSelected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.clubRow {
+  background: var(--color-bg-input);
+  border: 1.5px solid var(--color-border);
+}
+
+.clubRowSelected {
+  background: #809b6b;
+  border: 1.5px solid var(--color-primary);
+}
+
+.clubName {
+  font-size: 14px;
+  color: var(--color-text-heading);
+  font-weight: 500;
+}
+
+.check,
+.checkActive {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.check {
+  border: 1.5px solid var(--color-border);
+  background: transparent;
+}
+
+.checkActive {
+  border: 1.5px solid var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-text-light);
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--color-text-body);
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.loadMore {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1.5px dashed var(--color-border);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--color-text-body);
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 1.25rem;
+  background: var(--color-bg-page);
+  border-top: 1.5px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.selectedCount {
+  font-size: 13px;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin: 0;
+}
