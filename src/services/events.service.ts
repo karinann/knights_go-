@@ -158,3 +158,5 @@ export class EventService extends BaseService {
     }
   }
 }
+
+export const eventService = new EventService();

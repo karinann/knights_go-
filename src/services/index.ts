@@ -2,6 +2,7 @@ import { Database } from '@/types/database.types';
 import { ClubService } from './clubs.service';
 import { UserService } from './users.service';
 import { MembershipsService } from './memberships.service';
+import { EventService } from './events.service';
 
 // Create helper types for easier usage
 
@@ -31,4 +32,4 @@ export type AttendanceInsert = Database['public']['Tables']['event_attendance'][
 export type AttendanceUpdate = Database['public']['Tables']['event_attendance']['Update'];
 
 /* Exporting the API services from the services folder. */
-export { ClubService, UserService, MembershipsService };
+export { ClubService, UserService, MembershipsService, EventService };
