@@ -1,100 +1,23 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { useAuth } from 'context/AuthContext';
-import createClient from 'lib/supabase';
+import { useEvents } from '@/hooks/useEvents';
 import BottomNav from '@/components/BottomNav';
 import styles from '../styles/events.module.css';
 import Link from 'next/link';
 
-interface Club {
-  id: number;
-  club_name: string;
-}
-
-interface Event {
-  id: number;
-  event_name: string;
-  event_date: string;
-  description: string | null;
-  club_id: number;
-  longitude: number;
-  latitude: number;
-  base_xp: number | null;
-  club?: Club;
-}
-
 export default function EventsPage() {
-  const { user } = useAuth();
-  const router = useRouter();
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const { user } = useAuth(); // current logged in user
+  const [expandedId, setExpandedId] = useState<number | null>(null); // whether event card is expanded
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-    fetchEvents();
-  }, [user]);
+  // autoFetch is marked ture when user is confirmed logged in
+  const { events, loading, error } = useEvents({ autoFetch: !!user });
 
-  async function fetchEvents() {
-    // setEvents(MOCK_EVENTS);
-    // setLoading(false);
-
-    const supabase = createClient();
-
-    // get user's integer id
-    const { data: userData } = await supabase
-      .from('users')
-      .select('id, club_ids')
-      .eq('user_id', user?.id)
-      .single();
-
-    if (!userData) {
-      setLoading(false);
-      return;
-    }
-
-    // get club memberships for this user
-    const { data: memberships } = await supabase
-      .from('club_memberships')
-      .select('club_id')
-      .eq('user_id', userData.id);
-
-    if (!memberships || memberships.length === 0) {
-      setLoading(false);
-      return;
-    }
-
-    const clubIds = memberships.map((m) => m.club_id);
-
-    // fetch upcoming events from those clubs
-    // also fetch the club name in the same query
-    const { data: eventData } = await supabase
-      .from('events')
-      .select(
-        `
-        *,
-        club:club_id (
-          id,
-          club_name
-        )
-      `,
-      )
-      .in('club_id', clubIds)
-      .gte('event_date', new Date().toISOString())
-      .order('event_date', { ascending: true });
-
-    if (eventData) setEvents(eventData);
-    setLoading(false);
-    // */
-  }
-
+  // toggles card open or closed, if clicked when open, close it (set to null)
   function toggleExpand(id: number) {
     setExpandedId((prev) => (prev === id ? null : id));
   }
 
+  // formats date: "Wednesday, Apr 15, 06:00 PM"
   function formatDate(dateString: string) {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -107,13 +30,15 @@ export default function EventsPage() {
 
   return (
     <div className={styles.page}>
+      {/* Header - title and mange clubs button */}
       <div className={styles.header}>
         <div className={styles.headerTop}>
           <div>
             <h1 className={styles.title}>Events</h1>
             <p className={styles.subtitle}>From your clubs</p>
           </div>
-          <Link href="/clubs?mode=manage" className={styles.manageButton}>
+          {/* link to manage clubs page */}
+          <Link href="/manageclubs" className={styles.manageButton}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path
                 d="M12 5V19M5 12H19"
@@ -127,28 +52,44 @@ export default function EventsPage() {
         </div>
       </div>
 
+      {/* main content area */}
       <div className={styles.content}>
+        {/* loading events */}
         {loading && <p className={styles.hint}>Loading events...</p>}
 
-        {!loading && events.length === 0 && (
+        {/* if service call fails: display error */}
+        {error && <p className={styles.hint}>Error: {error}</p>}
+
+        {/* empty state: no upcoming events */}
+        {!loading && !error && events.length === 0 && (
           <div className={styles.emptyState}>
             <p className={styles.emptyTitle}>No upcoming events</p>
             <p className={styles.emptyHint}>Join more clubs to see their events here</p>
+            <Link href="/manageclubs" className={styles.emptyLink}>
+              Browse clubs
+            </Link>
           </div>
         )}
 
+        {/* events list displayed after loading is complete */}
         {!loading &&
           events.map((event) => {
             const isExpanded = expandedId === event.id;
+
             return (
-              <div key={event.id} className={isExpanded ? styles.cardExpanded : styles.card}>
-                {/* main row — always visible */}
+              <div
+                key={event.id}
+                // swap to expanded when selected
+                className={isExpanded ? styles.cardExpanded : styles.card}
+              >
+                {/* card header */}
                 <button
                   type="button"
                   className={styles.cardHeader}
                   onClick={() => toggleExpand(event.id)}
                 >
                   <div className={styles.cardLeft}>
+                    {/* dd/mm abbreviation */}
                     <div className={styles.dateBadge}>
                       <span className={styles.dateDay}>{new Date(event.event_date).getDate()}</span>
                       <span className={styles.dateMonth}>
@@ -157,7 +98,8 @@ export default function EventsPage() {
                     </div>
                     <div className={styles.cardInfo}>
                       <p className={styles.eventName}>{event.event_name}</p>
-                      <p className={styles.clubName}>{event.club?.club_name}</p>
+                      {/* location shown in collapsed view for quick reference */}
+                      {event.location && <p className={styles.locationPreview}>{event.location}</p>}
                     </div>
                   </div>
                   <svg
@@ -179,6 +121,7 @@ export default function EventsPage() {
                 {/* expanded details */}
                 {isExpanded && (
                   <div className={styles.cardDetails}>
+                    {/* full date and time */}
                     <div className={styles.detailRow}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <rect
@@ -200,22 +143,22 @@ export default function EventsPage() {
                       <span>{formatDate(event.event_date)}</span>
                     </div>
 
-                    <div className={styles.detailRow}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M12 2C8.686 2 6 4.686 6 8C6 12.5 12 19 12 19C12 19 18 12.5 18 8C18 4.686 15.314 2 12 2Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                        />
-                        <circle cx="12" cy="8" r="2" stroke="currentColor" strokeWidth="1.5" />
-                      </svg>
-                      <span>
-                        {event.latitude && event.longitude
-                          ? `${event.latitude.toFixed(4)}, ${event.longitude.toFixed(4)}`
-                          : 'Location TBA'}
-                      </span>
-                    </div>
+                    {/* building and room number  */}
+                    {event.location && (
+                      <div className={styles.detailRow}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path
+                            d="M12 2C8.686 2 6 4.686 6 8C6 12.5 12 19 12 19C12 19 18 12.5 18 8C18 4.686 15.314 2 12 2Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                          />
+                          <circle cx="12" cy="8" r="2" stroke="currentColor" strokeWidth="1.5" />
+                        </svg>
+                        <span>{event.location}</span>
+                      </div>
+                    )}
 
+                    {/* optional event description */}
                     {event.description && (
                       <div className={styles.detailRow}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -230,7 +173,10 @@ export default function EventsPage() {
                       </div>
                     )}
 
-                    {event.base_xp && <div className={styles.xpBadge}>+{event.base_xp} XP</div>}
+                    {/* experience reward */}
+                    {event.base_xp && (
+                      <div className={styles.xpBadge}>+{event.base_xp} XP for attending</div>
+                    )}
                   </div>
                 )}
               </div>
@@ -238,7 +184,6 @@ export default function EventsPage() {
           })}
       </div>
 
-      {/* <BottomNav activePage="events" /> */}
       <BottomNav />
     </div>
   );

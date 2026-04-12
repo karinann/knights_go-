@@ -203,3 +203,7 @@
   font-weight: 500;
   text-decoration: none;
 }
+
+.locationPreview {
+  font-size: small;
+}

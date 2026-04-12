@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useClubs } from '@/hooks/useClubs';
 import type { Club } from '@/services';
-import type { ClubCategory } from '../clubs';
+import type { ClubCategory } from '../manageclubs';
 import shared from '@styles/auth.module.css';
 import styles from '../signup/clubs/category.module.css';
 
@@ -74,7 +74,7 @@ export default function ClubCategoryPage() {
   }
 
   function handleDone() {
-    router.push('/clubs');
+    router.push('/manageclubs');
   }
 
   return (

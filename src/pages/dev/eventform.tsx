@@ -12,6 +12,7 @@ export default function EventFormPage() {
   const [eventName, setEventName] = useState<string>('');
   const [eventDate, setEventDate] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
   const [latitude, setLatitude] = useState<string>('');
   const [longitude, setLongitude] = useState<string>('');
   const [baseXp, setBaseXp] = useState<string>('50');
@@ -61,6 +62,7 @@ export default function EventFormPage() {
         event_name: eventName,
         event_date: new Date(eventDate).toISOString(),
         description: description || null,
+        location: location || null,
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
         base_xp: parseInt(baseXp, 10),
@@ -141,6 +143,17 @@ export default function EventFormPage() {
               value={eventDate}
               onChange={(e) => setEventDate(e.target.value)}
               required
+            />
+          </div>
+
+          <div className={shared.field}>
+            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+            <label>Location</label>
+            <input
+              type="text"
+              placeholder="e.g. BA 105"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
             />
           </div>
 
