@@ -36,7 +36,7 @@
     "lint": "next lint --fix --max-warnings 0 .",
     "prepare": "husky install",
     "start": "next start -p 5050",
-    "types:generate": "supabase gen types typescript --project-id YOUR_PROJECT_ID --schema public > types/database.ts"
+    "types:generate": "supabase gen types typescript --project-id qlqkzsnginccodhtfboe --schema public > types/database.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",

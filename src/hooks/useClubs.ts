@@ -1,11 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import { clubService } from '../services/clubs.service';
-import type { Club, ClubInsert, ClubUpdate } from '../types/database.types';
+import type { Club, ClubInsert, ClubUpdate } from '../services/index';
 
 // Interface for hook options
 export interface UseClubsOptions {
   limit?: number; // How many clubs to fetch
   autoFetch?: boolean; // Whether to fetch automatically
+}
+
+export interface SearchClubsParams {
+  category?: Club['category'];
+  club_name?: string;
+  limit?: number;
+  offset?: number;
 }
 
 // Interface for hook return value
@@ -20,6 +27,7 @@ export interface UseClubsReturn {
   createClub: (club: ClubInsert) => Promise<Club | null>;
   updateClub: (id: number, updates: ClubUpdate) => Promise<Club | null>;
   deleteClub: (id: number) => Promise<boolean>;
+  getAllClubsByParams: (params?: SearchClubsParams) => Promise<Club[]>;
 }
 
 export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
@@ -84,6 +92,18 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
     }
   }, []);
 
+  const getAllClubsByParams = useCallback(async (params?: SearchClubsParams): Promise<Club[]> => {
+    try {
+      setError(null);
+      const res = await clubService.getAllClubsByParam(params);
+      setClubs(res);
+      return res;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to find clubs by param');
+      return [];
+    }
+  }, []);
+
   useEffect(() => {
     if (autoFetch) {
       fetchClubs();
@@ -94,9 +114,11 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
     clubs,
     loading,
     error,
+
     refetch: fetchClubs,
     createClub,
     updateClub,
     deleteClub,
+    getAllClubsByParams,
   };
 }
