@@ -20,15 +20,15 @@
   left: 0;
   width: 100%;
   z-index: 9999;
-  border-radius: 1rem 1rem 0 0;
-  background-color: #000;
-  border-top: 1px solid #000;
+  /* border-radius: 1rem 1rem 0 0; */
+  background-color: var(--dark-green);
+  /* border-top: 1px solid #000; */
 }
 
-.navigation:dark {
+/* .navigation:dark {
   background-color: #18181b;
   border-top-color: #393941;
-}
+} */
 
 .navBox {
   margin: 0 auto;
@@ -51,18 +51,22 @@
   color: #e4e4e7;
 }
 
-/*
-
-.primary {
+/* .primary {
   @apply dark:text-[#fff9d9] text-[#0099FF];
 }
 
 .secondary {
   @apply dark:text-[#99A8B2] dark:hover:text-[#FEFBF6] text-[#3C4048] hover:text-[#F2DF3A];
-}
+} */
 
 .linkName {
-  @apply text-xs text-[#000] dark:text-[#FEFBF6];
+  @apply text-xs text-[#FEFBF6];
+  /* font-family: var(--font-kavoon);
+  font-size: smaller;
+  font-weight: 50; */
+  /* font-size: 9; */
 }
 
-*/
+.active {
+  background-color: #21331a;
+}
