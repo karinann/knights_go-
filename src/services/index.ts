@@ -3,6 +3,7 @@ import { ClubService } from './clubs.service';
 import { UserService } from './users.service';
 import { MembershipsService } from './memberships.service';
 import { EventService } from './events.service';
+import { EventAttendanceService } from './event.attendance.service';
 
 // Create helper types for easier usage
 
@@ -32,4 +33,4 @@ export type AttendanceInsert = Database['public']['Tables']['event_attendance'][
 export type AttendanceUpdate = Database['public']['Tables']['event_attendance']['Update'];
 
 /* Exporting the API services from the services folder. */
-export { ClubService, UserService, MembershipsService, EventService };
+export { ClubService, UserService, MembershipsService, EventService, EventAttendanceService };
