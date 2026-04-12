@@ -60,7 +60,6 @@ export default function LoginPage() {
             {loading ? 'Updating Information...' : 'Done'}
           </button>
         </form>
-
       </div>
     </main>
   );
