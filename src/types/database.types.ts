@@ -171,8 +171,9 @@ export type Database = {
           event_date: string;
           event_name: string;
           id: number;
-          latitude: number;
-          longitude: number;
+          latitude: number | null;
+          location: string | null;
+          longitude: number | null;
           status: string | null;
         };
         Insert: {
@@ -184,8 +185,9 @@ export type Database = {
           event_date: string;
           event_name: string;
           id?: number;
-          latitude: number;
-          longitude: number;
+          latitude?: number | null;
+          location?: string | null;
+          longitude?: number | null;
           status?: string | null;
         };
         Update: {
@@ -197,8 +199,9 @@ export type Database = {
           event_date?: string;
           event_name?: string;
           id?: number;
-          latitude?: number;
-          longitude?: number;
+          latitude?: number | null;
+          location?: string | null;
+          longitude?: number | null;
           status?: string | null;
         };
         Relationships: [
