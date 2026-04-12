@@ -54,8 +54,7 @@ export class EventService extends BaseService {
       if (
         membershipError ||
         !membership ||
-        membership.role !== 'club_rep' ||
-        membership.role !== 'admin'
+        (membership.role !== 'club_rep' && membership.role !== 'admin')
       ) {
         throw new Error('You must be a club rep to create events');
       }
