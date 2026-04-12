@@ -1,5 +1,5 @@
 import { BaseService } from './base.service';
-import type { Club, ClubInsert, ClubUpdate, Event } from './index';
+import type { Club, ClubInsert, ClubUpdate } from './index';
 import type { SearchClubsParams } from '../types/types';
 
 export class ClubService extends BaseService {
@@ -227,24 +227,6 @@ export class ClubService extends BaseService {
   //     return [];
   //   }
   // }
-
-  // Get club events
-  async getClubEvents(clubId: number): Promise<Event[]> {
-    try {
-      const { data, error } = await this.supabase
-        .from('events')
-        .select('*')
-        .eq('club_id', clubId)
-        .order('event_date', { ascending: true });
-
-      if (error) throw error;
-
-      return data;
-    } catch (error) {
-      this.handleError(error, 'ClubService.getClubEvents');
-      return [];
-    }
-  }
 }
 
 // Export singleton instance for reusing across calls
