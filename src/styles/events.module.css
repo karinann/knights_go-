@@ -1,0 +1,209 @@
+.page {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 2rem 1.25rem 1rem;
+}
+
+.title {
+  font-family: var(--font-kavoon);
+  font-size: 26px;
+  color: var(--color-text-heading);
+  margin: 0 0 4px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.content {
+  flex: 1;
+  background: var(--color-bg-card);
+  border-radius: 20px 20px 0 0;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card,
+.cardExpanded {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-input);
+}
+
+.cardExpanded {
+  border-color: var(--color-primary);
+}
+
+.cardHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cardLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dateBadge {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--color-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dateDay {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-light);
+  line-height: 1;
+  font-family: var(--font-kavoon);
+}
+
+.dateMonth {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eventName {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-heading);
+  margin: 0;
+  font-family: var(--font-kavoon);
+}
+
+.clubName {
+  font-size: 12px;
+  color: var(--color-text-body);
+  margin: 0;
+}
+
+.chevronDown,
+.chevronUp {
+  color: var(--color-text-body);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.chevronUp {
+  transform: rotate(180deg);
+}
+
+.cardDetails {
+  padding: 0 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid var(--color-border);
+  margin-top: 0;
+}
+
+.detailRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-body);
+  padding-top: 10px;
+}
+
+.detailRow svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--color-primary);
+}
+
+.xpBadge {
+  display: inline-block;
+  background: #e8f2e0;
+  color: var(--color-primary-dark);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  align-self: flex-start;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 8px;
+}
+
+.emptyTitle {
+  font-family: var(--font-kavoon);
+  font-size: 18px;
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.emptyHint {
+  font-size: 13px;
+  color: var(--color-text-body);
+  margin: 0;
+  text-align: center;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--color-text-body);
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.headerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.manageButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245, 240, 224, 0.2);
+  color: var(--color-text-light);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.locationPreview {
+  font-size: small;
+}
