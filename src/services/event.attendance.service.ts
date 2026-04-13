@@ -1,5 +1,7 @@
+import { XpLevelUpInfo } from '@/types/types';
 import { BaseService } from './base.service';
-import type { Attendance, AttendanceInsert, AttendanceUpdate } from './index';
+import { Attendance, AttendanceInsert, AttendanceUpdate } from './index';
+import { xPLevelUpService } from './xp.levelup.service';
 
 // eslint-disable-next-line import/prefer-default-export
 export class EventAttendanceService extends BaseService {
@@ -64,8 +66,11 @@ export class EventAttendanceService extends BaseService {
     }
   }
 
-  // Update attendance (check-in) for an event
-  async updateAttendanceForEvent(eventId: number): Promise<Attendance> {
+  // Check in for an event
+  async checkInEvent(eventId: number): Promise<{
+    attendance: Attendance;
+    xpAwarded: XpLevelUpInfo;
+  }> {
     try {
       const userId = await this.getCurrentUserId();
 
@@ -103,9 +108,6 @@ export class EventAttendanceService extends BaseService {
         throw new Error('User already checked in for this event');
       }
 
-      // Calculate total XP to give
-      const totalXp = (event.base_xp || 10) + (event.bonus_xp || 0);
-
       // Update attendance record
       const updateData: AttendanceUpdate = {
         status: 'checked_in',
@@ -124,9 +126,16 @@ export class EventAttendanceService extends BaseService {
       if (error) throw error;
       if (!data) throw new Error('Failed to update attendance');
 
-      /* figure out xp stuff later */
+      // Calculate total XP to give
+      const totalXp = (event.base_xp || 10) + (event.bonus_xp || 0);
 
-      return data;
+      // Award XP through the XP service before updating attendance
+      const xpResult = await xPLevelUpService.awardXP(userId, totalXp);
+
+      return {
+        attendance: data,
+        xpAwarded: xpResult,
+      };
     } catch (error) {
       this.handleError(error, 'updateAttendanceForEvent');
       throw error;
