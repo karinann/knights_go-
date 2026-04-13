@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import type { XPLevel } from './index';
-import type { XpCheckInStats, XpInfo, XpLeaderboardUser, XpLevelUpInfo } from '../types/types';
 import type { XPLevel } from '../services/index';
+import type { XpCheckInStats, XpInfo, XpLeaderboardUser, XpLevelUpInfo } from '../types/types';
+
 
 // Interface for hook options
 export interface UseXPLevelUpOptions {
