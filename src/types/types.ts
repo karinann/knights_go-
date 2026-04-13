@@ -26,6 +26,8 @@ export interface ClubMember {
     avatar_url: string | null;
   };
 }
+
+// Parameters for searching through clubs
 export interface SearchClubsParams {
   category?: Club['category'];
   club_name?: string;
@@ -33,6 +35,7 @@ export interface SearchClubsParams {
   offset?: number;
 }
 
+// Info from leveling up (or not)
 export interface XpLevelUpInfo {
   newTotalXP: number;
   leveledUp: boolean;
@@ -42,6 +45,7 @@ export interface XpLevelUpInfo {
   newTitle: string | null;
 }
 
+// Details how much x[ was awarded
 export interface XpAwarded {
   xp_amnt: number;
   level: number;
@@ -50,6 +54,7 @@ export interface XpAwarded {
   max_xp: number | null;
 }
 
+// Gives detailed info about xp
 export interface XpInfo {
   currentXP: number;
   currentLevel: number;
@@ -62,6 +67,7 @@ export interface XpInfo {
   progressToNextLevel: number;
 }
 
+// Gives info about user for leaderboard
 export interface XpLeaderboardUser {
   id: number;
   first_name: string;
@@ -72,6 +78,7 @@ export interface XpLeaderboardUser {
   avatar_url: string | null;
 }
 
+// Xp stuff after user checks in
 export interface XpCheckInStats {
   userXP: {
     experience_level: number | null;

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { XpLevelUpInfo } from '@/types/types';
 import { eventAttendanceService } from '../services/event.attendance.service';
-import type { Attendance, AttendanceInsert, AttendanceUpdate } from '../services/index';
+import type { Attendance } from '../services/index';
 
 // Interface for hook options
 export interface UseAttendanceOptions {
@@ -39,7 +39,7 @@ export interface UseAttendanceReturn {
  * Scaffolded hook; please handle the api calls on ur own
  */
 
-export function useUsers(options: UseAttendanceOptions = {}): UseAttendanceReturn {
+export function useAttendance(options: UseAttendanceOptions = {}): UseAttendanceReturn {
   // Func defs here
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [loading, setLoading] = useState(false);
