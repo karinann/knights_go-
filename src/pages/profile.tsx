@@ -3,8 +3,7 @@ import { useRouter } from 'next/router'; // ← pages/ uses next/router, not nex
 import shared from '@styles/auth.module.css';
 import Image from 'next/image';
 import createClient from 'lib/supabase';
-import Link from 'next/link';
-import styles from '../styles/page.module.css';
+import BottomNav from '@/components';
 
 export default function LoginPage() {
   // const [current state value, function used to update value]
@@ -13,6 +12,20 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const supabase = createClient();
+
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    if (authError) {
+      setError(authError.message);
+      setLoading(false);
+      return;
+    }
     router.push('/home');
   }
 
@@ -43,10 +56,11 @@ export default function LoginPage() {
           {error && <p className={shared.error}>{error}</p>}
 
           <button type="submit" className={shared.button} disabled={loading}>
-            {loading ? 'Updating Information...' : 'Done'}
+            {loading ? 'Updating Information...' : 'Save Changes'}
           </button>
         </form>
       </div>
+      <BottomNav />
     </main>
   );
 }
