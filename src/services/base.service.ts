@@ -1,9 +1,11 @@
 // Abstract class for forming services
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 import type { Database } from '../types/database.types';
 
+// eslint-disable-next-line import/prefer-default-export
 export abstract class BaseService {
-  protected static supabase: SupabaseClient<Database> = createClient<Database>(
+  protected static supabase: SupabaseClient<Database> = createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );

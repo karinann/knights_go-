@@ -1,7 +1,4 @@
 import { Database } from '@/types/database.types';
-import { ClubService } from './clubs.service';
-import { UserService } from './users.service';
-import { MembershipsService } from './memberships.service';
 
 // Create helper types for easier usage
 // User
@@ -19,8 +16,15 @@ export type Member = Database['public']['Tables']['club_memberships']['Row'];
 export type MemberInsert = Database['public']['Tables']['club_memberships']['Insert'];
 export type MemberUpdate = Database['public']['Tables']['club_memberships']['Update'];
 
-// Member
+// Events
 export type Event = Database['public']['Tables']['events']['Row'];
+export type EventInsert = Database['public']['Tables']['events']['Insert'];
+export type EventUpdate = Database['public']['Tables']['events']['Update'];
 
-/* Exporting the API services from the services folder. */
-export { ClubService, UserService, MembershipsService };
+// Event attendance
+export type Attendance = Database['public']['Tables']['event_attendance']['Row'];
+export type AttendanceInsert = Database['public']['Tables']['event_attendance']['Insert'];
+export type AttendanceUpdate = Database['public']['Tables']['event_attendance']['Update'];
+
+// XP Level
+export type XPLevel = Database['public']['Tables']['xp_levels']['Row'];

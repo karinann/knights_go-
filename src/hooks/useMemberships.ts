@@ -29,7 +29,7 @@ export interface UseMembersReturn {
  * Scaffoled hook
  */
 
-export function useUsers(options: UseMembersOptions = {}): UseMembersReturn {
+export function useMembers(options: UseMembersOptions = {}): UseMembersReturn {
   // Func defs here
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(false);

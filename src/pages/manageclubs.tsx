@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { useAuth } from 'context/AuthContext';
 import createClient from 'lib/supabase';
-import Link from 'next/link';
 import shared from '@styles/auth.module.css';
 import styles from '@styles/clubs.module.css';
 
@@ -17,13 +17,14 @@ const CATEGORIES = [
 
 export type ClubCategory = (typeof CATEGORIES)[number];
 
-export default function ClubCategoriesPage() {
+export default function ManageClubsPage() {
+  const { user } = useAuth();
   const router = useRouter();
   const [selectedCounts, setSelectedCounts] = useState<Record<string, number>>({});
-  const { user } = useAuth();
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // load existing selections from localStorage on load
   useEffect(() => {
     const saved = localStorage.getItem('selectedClubs');
     if (!saved) return;
@@ -37,14 +38,14 @@ export default function ClubCategoriesPage() {
 
   const totalSelected = Object.values(selectedCounts).reduce((a, b) => a + b, 0);
 
-  // save the selected clubs to user's data
-  async function handleConfirm() {
+  async function handleSave() {
     if (!user) return;
     setSaving(true);
     setError(null);
 
     const supabase = createClient();
 
+    // get user's integer id
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('id')
@@ -57,11 +58,14 @@ export default function ClubCategoriesPage() {
       return;
     }
 
-    // get selected clubs from localStorage
+    // get selected club ids from localStorage
     const saved = localStorage.getItem('selectedClubs');
     const selectedClubs: { id: number; category: string }[] = saved ? JSON.parse(saved) : [];
 
-    // insert a membership row for each selected club
+    // delete existing memberships first
+    await supabase.from('club_memberships').delete().eq('user_id', userData.id);
+
+    // insert new memberships
     if (selectedClubs.length > 0) {
       const memberships = selectedClubs.map((club) => ({
         user_id: userData.id,
@@ -77,27 +81,39 @@ export default function ClubCategoriesPage() {
       }
     }
 
-    // clear localStorage
     localStorage.removeItem('selectedClubs');
-    router.push('/signup/knightselector');
+    router.push('/events');
   }
 
   return (
     <main className={shared.wrapper}>
       <div className={shared.card}>
-        {/* Header */}
         <div className={shared.header}>
-          <h1 className={shared.title}>What clubs are you interested in?</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <button
+              type="button"
+              onClick={() => router.push('/events')}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M15 18L9 12L15 6"
+                  stroke="var(--color-primary)"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+            <h1 className={shared.title}>Manage Club Interests</h1>
+          </div>
           <p className={styles.hint}>Select as many as you like</p>
         </div>
 
-        {/* list of categories */}
         <div className={styles.categories}>
           {CATEGORIES.map((cat) => (
             <Link
               key={cat}
-              // go to selected categories page
-              href={`/signup/clubs/${encodeURIComponent(cat)}`}
+              href={`/clubs/${encodeURIComponent(cat)}`}
               className={styles.categoryRow}
             >
               <span className={styles.categoryName}>{cat}</span>
@@ -118,26 +134,20 @@ export default function ClubCategoriesPage() {
           ))}
         </div>
 
-        {/* display and save number of clubs selected */}
-        {totalSelected > 0 && (
-          <div className={styles.confirmSection}>
-            <p className={styles.selectedCount}>{totalSelected} clubs selected</p>
-            {error && <p className={shared.error}>{error}</p>}
-            <button
-              type="button"
-              className={shared.button}
-              onClick={handleConfirm}
-              disabled={saving}
-            >
-              {saving ? 'Saving...' : 'Next'}
-            </button>
-          </div>
-        )}
+        {error && <p className={shared.error}>{error}</p>}
 
-        {/* skip club selection */}
+        <div className={styles.confirmSection}>
+          {totalSelected > 0 && (
+            <p className={styles.selectedCount}>{totalSelected} clubs selected</p>
+          )}
+          <button type="button" className={shared.button} onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving...' : 'Save & Back to Events'}
+          </button>
+        </div>
+
         <div className={shared.footer}>
-          <Link href="/signup/knightselector" className={styles.skip}>
-            Skip for now
+          <Link href="/events" className={styles.skip}>
+            Cancel
           </Link>
         </div>
       </div>
