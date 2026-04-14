@@ -1,3 +1,4 @@
+
 import dynamic from 'next/dynamic';
 import BottomNav from '@/components';
 import styles from '../styles/home.module.css';
@@ -14,9 +15,11 @@ const Scanner = dynamic(
 export default function qr_page() {
   return (
     <div className={styles.page}>
+      <div className ={styles.scannerContainer}>
       <Scanner
       onScan={(result) => console.log(result)}
     />
+    </div>
     <BottomNav />
     </div>
   );
