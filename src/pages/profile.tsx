@@ -1,33 +1,32 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router'; // ← pages/ uses next/router, not next/navigation
 import shared from '@styles/auth.module.css';
-import Image from 'next/image';
 import createClient from 'lib/supabase';
+import Image from 'next/image';
 import BottomNav from '@/components';
 
 export default function LoginPage() {
   // const [current state value, function used to update value]
-  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const router = useRouter();
 
-  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     const supabase = createClient();
 
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
-    if (authError) {
-      setError(authError.message);
+    supabase.auth.updateUser({ password }).then(({ error: updateError }) => {
+      if (updateError) {
+        setError(updateError.message);
+        setLoading(false);
+        return;
+      }
       setLoading(false);
-      return;
-    }
-    router.push('/home');
-  }
+    });
+  };
 
   return (
     <main className={shared.wrapper}>
@@ -39,7 +38,7 @@ export default function LoginPage() {
           <h1 className={shared.title}>Profile</h1>
         </div>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit}>
           <div className={shared.field}>
             {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
             <label htmlFor="password">Change Password</label>
