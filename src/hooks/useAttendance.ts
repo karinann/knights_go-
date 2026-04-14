@@ -53,6 +53,6 @@ export function useAttendance(options: UseAttendanceOptions = {}): UseAttendance
     registerUserForClubEvent,
     checkInEvent,
     getEventRegistrations,
-    isUserRegistered
+    isUserRegistered,
   };
 }

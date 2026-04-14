@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import type { XPLevel } from '../services/index';
 import type { XpCheckInStats, XpInfo, XpLeaderboardUser, XpLevelUpInfo } from '../types/types';
 
-
 // Interface for hook options
 export interface UseXPLevelUpOptions {
   limit?: number; // How many Attendances to fetch
@@ -56,6 +55,6 @@ export function useXPLevelUp(options: UseXPLevelUpOptions = {}): UseXPLevelUpRet
     awardXP,
     getUserLevelInfo,
     getXPLeaderboard,
-    awardEventCheckInXP
+    awardEventCheckInXP,
   };
 }
