@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import type { RoleWithClub } from '@/types/types';
 import { userService } from '../services/users.service';
 import type { User, UserUpdate } from '../services/index';
 
@@ -19,6 +20,7 @@ export interface UseUsersReturn {
   refetch: () => Promise<void>;
   updateUser: (id: number, updates: UserUpdate) => Promise<User | null>;
   deleteUser: (id: number) => Promise<boolean>;
+  getMyClubs: (userId: number, limit: 10, offset: 0) => Promise<RoleWithClub[]>;
 }
 
 export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {

@@ -1,10 +1,8 @@
-import { BaseService } from './base.service';
-import type { User, UserUpdate } from '../types/database.types';
 import type { RoleWithClub } from '@/types/types';
-
+import type { User, UserUpdate } from './index';
+import { BaseService } from './base.service';
 
 export class UserService extends BaseService {
-
   // Get all users
   async getUsers(limit = 10, offset = 0): Promise<User[]> {
     try {
@@ -42,7 +40,6 @@ export class UserService extends BaseService {
   // Edit user
   async updateUser(id: number, data: UserUpdate): Promise<User> {
     try {
-
       // // Ensure users can update only their profile
       // const currentUserID = await this.getCurrentUserId();
 
@@ -127,7 +124,6 @@ export class UserService extends BaseService {
       //   throw new Error('You are not the actual user!')
       // }
 
-
       const { data: memberships, error: membershipError } = await this.supabase
         .from('club_memberships')
         .select(
@@ -139,7 +135,8 @@ export class UserService extends BaseService {
             category,
             logo_url
           )
-        `)
+        `,
+        )
         .eq('user_id', userId);
 
       if (membershipError) throw membershipError;
@@ -151,11 +148,12 @@ export class UserService extends BaseService {
 
       const res: RoleWithClub[] = memberships.map((item) => ({
         club: item.clubs,
-        role: item.role || "member"
+        role: item.role || 'member',
       }));
 
       return res;
     } catch (err: any) {
+      this.handleError(err, 'UserService.getMyClubs');
       return [];
     }
   }
