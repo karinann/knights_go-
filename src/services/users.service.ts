@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import type { RoleWithClub } from '@/types/types';
 import { BaseService } from './base.service';
 import type { User, UserUpdate } from '../types/database.types';
+=======
+import type { MonDressUpUrls, RoleWithClub } from '@/types/types';
+import type { User, UserUpdate } from './index';
+import { BaseService } from './base.service';
+>>>>>>> main
 
 export class UserService extends BaseService {
   // Get all users
@@ -31,7 +37,7 @@ export class UserService extends BaseService {
 
       // On sucess, return data; null if not
       return data;
-    } catch (error: any) {
+    } catch (error) {
       this.handleError(error, 'UserService.getUserById');
       return null;
     }
@@ -40,6 +46,7 @@ export class UserService extends BaseService {
   // Edit user
   async updateUser(id: number, data: UserUpdate): Promise<User> {
     try {
+<<<<<<< HEAD
       // // Ensure users can update only their profile
       // const currentUserID = await this.getCurrentUserId();
 
@@ -57,6 +64,13 @@ export class UserService extends BaseService {
       // if (user.id !== id) {
       //   throw new Error('You can only update your own profile');
       // }
+=======
+      const currentUserID = await this.getCurrentUserId();
+
+      if (currentUserID !== id) {
+        throw new Error('You can only dress your own Mon!');
+      }
+>>>>>>> main
 
       // Update user info
       const { data: updatedUser, error: userUpdateError } = await this.supabase
@@ -70,7 +84,7 @@ export class UserService extends BaseService {
 
       if (userUpdateError) throw userUpdateError;
       return updatedUser;
-    } catch (error: any) {
+    } catch (error) {
       this.handleError(error, 'UserService.updateUser');
       throw new Error('Failed to update User');
     }
@@ -79,51 +93,32 @@ export class UserService extends BaseService {
   // Delete User
   async deleteUser(id: number): Promise<void> {
     try {
-      // // Confirm user
-      // const currentUserID = await this.getCurrentUserId();
-
-      // // Get user profile
-      // const { data: user, error: userError } = await this.supabase
-      //   .from('users')
-      //   .select('id')
-      //   .eq('id', currentUserID)
-      //   .single()
-
-      // // Failed to get user
-      // if (userError || !user) {
-      //   throw new Error('User profile not found');
-      // }
+      const currentUserID = await this.getCurrentUserId();
+      if (currentUserID !== id) {
+        throw new Error('You can only delete your own account');
+      }
 
       const { error: deleteError } = await this.supabase.from('users').delete().eq('id', id);
 
       if (deleteError) throw deleteError;
-    } catch (error: any) {
+    } catch (error) {
       this.handleError(error, 'UserService.deleteUser');
     }
   }
 
   // Get clubs that the user is in; returns the user's role and club name, desc,
   // category, and logo_url
-  async getMyClubs(userId: number, limit: 10, offset: 0): Promise<RoleWithClub[]> {
+  async getMyClubs(userId: number): Promise<RoleWithClub[]> {
     try {
-      // const currentUserID = await this.getCurrentUserId()
+      const currentUserID = await this.getCurrentUserId();
 
-      // // Get user profile
-      // const { data: user, error: userError } = await this.supabase
-      //   .from('users')
-      //   .select('id')
-      //   .eq('id', currentUserID)
-      //   .single();
+<<<<<<< HEAD
+=======
+      if (currentUserID !== userId) {
+        throw new Error('You can only get your own clubs!');
+      }
 
-      // // Failed to get user
-      // if (userError || !user) {
-      //   throw new Error('User profile not found');
-      // }
-
-      // if (user.id != userId) {
-      //   throw new Error('You are not the actual user!')
-      // }
-
+>>>>>>> main
       const { data: memberships, error: membershipError } = await this.supabase
         .from('club_memberships')
         .select(
@@ -152,8 +147,160 @@ export class UserService extends BaseService {
       }));
 
       return res;
-    } catch (err: any) {
+    } catch (err) {
+      this.handleError(err, 'UserService.getMyClubs');
       return [];
+    }
+  }
+
+  // Update profile picture (avatar_url)
+  async updateProfilePicture(userId: number, pfpUrl: string): Promise<User> {
+    try {
+      const currentUserID = await this.getCurrentUserId();
+
+      if (currentUserID !== userId) {
+        throw new Error('You can only dress your own Mon!');
+      }
+
+      const { data, error } = await this.supabase
+        .from('users')
+        .update({ avatar_url: pfpUrl })
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      this.handleError(error, 'userService.updateProfilePicture');
+      throw error;
+    }
+  }
+
+  // Update Base Mon
+  async updateMonBaseUrl(userId: number, monUrl: string): Promise<User> {
+    try {
+      const currentUserID = await this.getCurrentUserId();
+
+      if (currentUserID !== userId) {
+        throw new Error('You can only dress your own Mon!');
+      }
+
+      const { data, error } = await this.supabase
+        .from('users')
+        .update({ mon_url: monUrl })
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      this.handleError(error, 'updateMonBaseUrl');
+      throw error;
+    }
+  }
+
+  // Update hat for mon
+  async updateMonHatUrl(userId: number, hatUrl: string): Promise<User> {
+    try {
+      const currentUserID = await this.getCurrentUserId();
+
+      if (currentUserID !== userId) {
+        throw new Error('You can only dress your own Mon!');
+      }
+
+      const { data, error } = await this.supabase
+        .from('users')
+        .update({ mon_hat_url: hatUrl })
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      this.handleError(error, 'updateMonHatUrl');
+      throw error;
+    }
+  }
+
+  // Update shirt of mon
+  async updateMonShirtUrl(userId: number, shirtUrl: string): Promise<User> {
+    try {
+      const currentUserID = await this.getCurrentUserId();
+
+      if (currentUserID !== userId) {
+        throw new Error('You can only dress your own Mon!');
+      }
+
+      const { data, error } = await this.supabase
+        .from('users')
+        .update({ mon_shirt_url: shirtUrl })
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      this.handleError(error, 'updateMonShirtUrl');
+      throw error;
+    }
+  }
+
+  // Update wand of mon
+  async updateMonWandUrl(userId: number, wandUrl: string): Promise<User> {
+    try {
+      const currentUserID = await this.getCurrentUserId();
+
+      if (currentUserID !== userId) {
+        throw new Error('You can only dress your own Mon!');
+      }
+
+      const { data, error } = await this.supabase
+        .from('users')
+        .update({ mon_wand_url: wandUrl })
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      this.handleError(error, 'updateMonWandUrl');
+      throw error;
+    }
+  }
+
+  // Get all MON URLs for a user
+  async getMonUrls(userId: number): Promise<MonDressUpUrls> {
+    try {
+      const currentUserID = await this.getCurrentUserId();
+
+      if (currentUserID !== userId) {
+        throw new Error('You can only dress your own Mon!');
+      }
+
+      const { data, error } = await this.supabase
+        .from('users')
+        .select('mon_url, mon_hat_url, mon_shirt_url, mon_wand_url')
+        .eq('id', userId)
+        .single();
+
+      if (error) throw error;
+
+      const monDressUp: MonDressUpUrls = {
+        mon_url: data.mon_url || null,
+        mon_hat_url: data.mon_hat_url || null,
+        mon_shirt_url: data.mon_shirt_url || null,
+        mon_wand_url: data.mon_wand_url || null,
+      };
+
+      return monDressUp;
+    } catch (error) {
+      this.handleError(error, 'getMonUrls');
+      throw error;
     }
   }
 }

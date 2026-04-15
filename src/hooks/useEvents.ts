@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { eventService } from '../services/events.service';
-import type { Event } from '../services/index';
+import type { Event, EventInsert } from '../services/index';
 
 export interface UseEventsOptions {
   autoFetch?: boolean; // whether to fetch automatically
@@ -11,6 +11,21 @@ export interface UseEventsReturn {
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
+
+  // Insert a club event
+  insertClubEvent: (eventData: EventInsert) => Promise<Event>;
+
+  // Update club evennt
+  updateClubEvent: (eventData: EventInsert) => Promise<Event>;
+
+  // Get all upcoming events (no past events)
+  getAllUpcomingClubEvents: () => Promise<Event[]>;
+
+  // Get all club events (ncluding past events)
+  getClubEvents: (clubId: number, includePast?: false) => Promise<Event[]>;
+
+  // Get one event by id
+  getEventById: (eventId: number) => Promise<Event | null>;
 }
 
 export function useEvents(options: UseEventsOptions = {}): UseEventsReturn {
@@ -46,5 +61,9 @@ export function useEvents(options: UseEventsOptions = {}): UseEventsReturn {
     loading,
     error,
     refetch: fetchEvents,
+    insertClubEvent,
+    updateClubEvent,
+    getAllUpcomingClubEvents,
+    getEventById,
   };
 }

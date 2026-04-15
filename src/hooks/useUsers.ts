@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import type { MonDressUpUrls, RoleWithClub } from '@/types/types';
 import { userService } from '../services/users.service';
 import type { User, UserUpdate } from '../services/index';
 
@@ -17,10 +18,46 @@ export interface UseUsersReturn {
 
   // Actions
   refetch: () => Promise<void>;
+
+  // Update user
   updateUser: (id: number, updates: UserUpdate) => Promise<User | null>;
+
+  // Delete user
   deleteUser: (id: number) => Promise<boolean>;
+
+  // Get all clubs associated with user ID
+  getMyClubs: (userId: number, limit: 10, offset: 0) => Promise<RoleWithClub[]>;
+
+  // Update profile picture (if u want)
+  updateProfilePicture: (userId: number, pfpUrl: string) => Promise<User>;
+
+  // Update the base model mon of user
+  updateMonBaseUrl: (userId: number, monUrl: string) => Promise<User>;
+
+  // Update the hat url of mon
+  updateMonHatUrl: (userId: number, hatUrl: string) => Promise<User>;
+
+  // Update shirt url of mon
+  updateMonShirtUrl: (userId: number, shirtUrl: string) => Promise<User>;
+
+  // Update wand url of mon
+  updateMonWandUrl: (userId: number, wandUrl: string) => Promise<User>;
+
+  // Get all dress up mon urls (base, hat, shirt, wand)
+  getMonUrls: (userId: number) => Promise<MonDressUpUrls>;
 }
 
+/**
+ *
+ * Scaffolded hook; only fetchUsers, update/delete user are done
+ * Missing:
+    getMyClubs,
+    updateMonBaseUrl,
+    updateMonHatUrl,
+    updateMonShirtUrl,
+    updateMonWandUrl,
+    getMonUrls
+ */
 export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
   const { limit = 10, autoFetch = true } = options;
 
@@ -81,8 +118,16 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
     users,
     loading,
     error,
+
+    // Functions
     refetch: fetchUsers,
     updateUser,
     deleteUser,
+    getMyClubs,
+    updateMonBaseUrl,
+    updateMonHatUrl,
+    updateMonShirtUrl,
+    updateMonWandUrl,
+    getMonUrls
   };
 }
