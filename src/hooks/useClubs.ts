@@ -122,5 +122,7 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
     updateClub,
     deleteClub,
     getAllClubsByParams,
+    updateClubSprite,
+    updateClubLogo,
   };
 }
