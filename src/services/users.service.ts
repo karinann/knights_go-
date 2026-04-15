@@ -124,6 +124,30 @@ export class UserService extends BaseService {
     }
   }
 
+  // Update profile picture (avatar_url)
+  async updateProfilePicture(userId: number, pfpUrl: string): Promise<User> {
+    try {
+      const currentUserID = await this.getCurrentUserId();
+
+      if (currentUserID !== userId) {
+        throw new Error('You can only dress your own Mon!');
+      }
+
+      const { data, error } = await this.supabase
+        .from('users')
+        .update({ avatar_url: pfpUrl })
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      this.handleError(error, 'userService.updateProfilePicture');
+      throw error;
+    }
+  }
+
   // Update Base Mon
   async updateMonBaseUrl(userId: number, monUrl: string): Promise<User> {
     try {

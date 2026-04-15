@@ -28,6 +28,9 @@ export interface UseUsersReturn {
   // Get all clubs associated with user ID
   getMyClubs: (userId: number, limit: 10, offset: 0) => Promise<RoleWithClub[]>;
 
+  // Update profile picture (if u want)
+  updateProfilePicture: (userId: number, pfpUrl: string) => Promise<User>;
+
   // Update the base model mon of user
   updateMonBaseUrl: (userId: number, monUrl: string) => Promise<User>;
 
