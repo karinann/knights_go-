@@ -26,6 +26,12 @@ export interface UseEventsReturn {
 
   // Get one event by id
   getEventById: (eventId: number) => Promise<Event | null>;
+
+  // Update the latitude and longitude of an event
+  updateEventLatLong: (eventId: number, latitude: number, longitude: number) => Promise<Event>;
+
+  // Update the event's location name (like to BA1 220 or something)
+  updateEventLocation: (eventId: number, location: string) => Promise<Event>;
 }
 
 export function useEvents(options: UseEventsOptions = {}): UseEventsReturn {
@@ -65,5 +71,7 @@ export function useEvents(options: UseEventsOptions = {}): UseEventsReturn {
     updateClubEvent,
     getAllUpcomingClubEvents,
     getEventById,
+    updateEventLatLong,
+    updateEventLocation,
   };
 }
