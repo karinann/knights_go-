@@ -128,6 +128,6 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
     updateMonHatUrl,
     updateMonShirtUrl,
     updateMonWandUrl,
-    getMonUrls
+    getMonUrls,
   };
 }
