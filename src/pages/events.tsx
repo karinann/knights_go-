@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useAuth } from 'context/AuthContext';
 import { useEvents } from '@/hooks/useEvents';
 import BottomNav from '@/components/BottomNav';
-import styles from '../styles/events.module.css';
 import Link from 'next/link';
+import styles from '../styles/events.module.css';
 
 export default function EventsPage() {
   const { user } = useAuth(); // current logged in user

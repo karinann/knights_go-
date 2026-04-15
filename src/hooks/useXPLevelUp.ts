@@ -50,5 +50,9 @@ export function useXPLevelUp(options: UseXPLevelUpOptions = {}): UseXPLevelUpRet
     awardXP,
     getUserLevelInfo,
     getXPLeaderboard,
+<<<<<<< HEAD
+    awardEventCheckInXP,
+=======
+>>>>>>> main
   };
 }
