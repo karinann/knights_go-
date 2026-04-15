@@ -18,13 +18,29 @@ export interface UseUsersReturn {
 
   // Actions
   refetch: () => Promise<void>;
+
+  // Update user
   updateUser: (id: number, updates: UserUpdate) => Promise<User | null>;
+
+  // Delete user
   deleteUser: (id: number) => Promise<boolean>;
+
+  // Get all clubs associated with user ID
   getMyClubs: (userId: number, limit: 10, offset: 0) => Promise<RoleWithClub[]>;
+
+  // Update the base model mon of user
   updateMonBaseUrl: (userId: number, monUrl: string) => Promise<User>;
+
+  // Update the hat url of mon
   updateMonHatUrl: (userId: number, hatUrl: string) => Promise<User>;
+
+  // Update shirt url of mon
   updateMonShirtUrl: (userId: number, shirtUrl: string) => Promise<User>;
+
+  // Update wand url of mon
   updateMonWandUrl: (userId: number, wandUrl: string) => Promise<User>;
+
+  // Get all dress up mon urls (base, hat, shirt, wand)
   getMonUrls: (userId: number) => Promise<MonDressUpUrls>;
 }
 
