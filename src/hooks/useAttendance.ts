@@ -58,6 +58,9 @@ export function useAttendance(options: UseAttendanceOptions = {}): UseAttendance
     checkInEvent,
     getEventRegistrations,
     isUserRegistered,
+<<<<<<< HEAD
+=======
     getAllMyEvents,
+>>>>>>> main
   };
 }
