@@ -89,3 +89,11 @@ export interface XpCheckInStats {
   newTitle: string;
   xpEarned: number;
 }
+
+// Mon dress up struct
+export interface MonDressUpUrls {
+  mon_url: string | null;
+  mon_hat_url: string | null;
+  mon_shirt_url: string | null;
+  mon_wand_url: string | null;
+}
