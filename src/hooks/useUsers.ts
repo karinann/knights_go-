@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { RoleWithClub } from '@/types/types';
+import type { MonDressUpUrls, RoleWithClub } from '@/types/types';
 import { userService } from '../services/users.service';
 import type { User, UserUpdate } from '../services/index';
 
@@ -21,8 +21,24 @@ export interface UseUsersReturn {
   updateUser: (id: number, updates: UserUpdate) => Promise<User | null>;
   deleteUser: (id: number) => Promise<boolean>;
   getMyClubs: (userId: number, limit: 10, offset: 0) => Promise<RoleWithClub[]>;
+  updateMonBaseUrl: (userId: number, monUrl: string) => Promise<User>;
+  updateMonHatUrl: (userId: number, hatUrl: string) => Promise<User>;
+  updateMonShirtUrl: (userId: number, shirtUrl: string) => Promise<User>;
+  updateMonWandUrl: (userId: number, wandUrl: string) => Promise<User>;
+  getMonUrls: (userId: number) => Promise<MonDressUpUrls>;
 }
 
+/**
+ *
+ * Scaffolded hook; only fetchUsers, update/delete user are done
+ * Missing:
+    getMyClubs,
+    updateMonBaseUrl,
+    updateMonHatUrl,
+    updateMonShirtUrl,
+    updateMonWandUrl,
+    getMonUrls
+ */
 export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
   const { limit = 10, autoFetch = true } = options;
 
@@ -83,8 +99,16 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
     users,
     loading,
     error,
+
+    // Functions
     refetch: fetchUsers,
     updateUser,
     deleteUser,
+    getMyClubs,
+    updateMonBaseUrl,
+    updateMonHatUrl,
+    updateMonShirtUrl,
+    updateMonWandUrl,
+    getMonUrls
   };
 }
