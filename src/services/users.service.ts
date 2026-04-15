@@ -82,7 +82,7 @@ export class UserService extends BaseService {
 
   // Get clubs that the user is in; returns the user's role and club name, desc,
   // category, and logo_url
-  async getMyClubs(userId: number, limit: 10, offset: 0): Promise<RoleWithClub[]> {
+  async getMyClubs(userId: number): Promise<RoleWithClub[]> {
     try {
       const currentUserID = await this.getCurrentUserId();
 
