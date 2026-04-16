@@ -4,7 +4,7 @@ function qr() {
   const handleScan = (detectedCodes: any[]) => {
     console.log('Detected codes:', detectedCodes);
     // detectedCodes is an array of IDetectedBarcode objects
-    detectedCodes.forEach(code => {
+    detectedCodes.forEach((code) => {
       console.log(`Format: ${code.format}, Value: ${code.rawValue}`);
     });
   };

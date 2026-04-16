@@ -147,7 +147,7 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
       throw err;
     }
   }, []);
-  
+
   const getMyClubs = useCallback(async (userId: number) => {
     try {
       setError(null);

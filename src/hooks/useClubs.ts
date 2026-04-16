@@ -101,7 +101,7 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
       setClubs((prev) => prev.map((club) => (club.id === clubId ? updated : club)));
       return updated;
     },
-    []
+    [],
   );
   // ── CHANGED END ──
 
@@ -114,7 +114,7 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
       setClubs((prev) => prev.map((club) => (club.id === clubId ? updated : club)));
       return updated;
     },
-    []
+    [],
   );
   // ── CHANGED END ──
 

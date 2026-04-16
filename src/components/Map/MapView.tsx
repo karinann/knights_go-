@@ -50,10 +50,8 @@ function MapView() {
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
-
       {/* ── Map ─────────────────────────────────────────────────────────── */}
       <div style={{ width: '75%', height: '100%' }}>
-
         {/* Loading / error banners — sit above the map */}
         {loading && <div style={bannerStyle('#f0f4ff', '#1565C0')}>Loading events…</div>}
         {error && <div style={bannerStyle('#fff0f0', '#c62828')}>Error: {error}</div>}

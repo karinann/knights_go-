@@ -2,8 +2,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import createClient from 'lib/supabase';
 import { useAuth } from 'context/AuthContext';
-import styles from '../styles/wardrobe.module.css';
 import { useUsers } from '@/hooks/useUsers';
+import styles from '../styles/wardrobe.module.css';
 
 type Category = 'base' | 'hat' | 'shirt' | 'wand';
 

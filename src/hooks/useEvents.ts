@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createBrowserClient } from '@supabase/ssr';
 import { eventService } from '../services/events.service';
 import type { Event, EventInsert } from '../services/index';
 // ── CHANGED START ──
 // Added supabase client import to check session before fetching
-import { createBrowserClient } from '@supabase/ssr';
 // ── CHANGED END ──
 
 export interface UseEventsOptions {
@@ -29,7 +29,7 @@ export interface UseEventsReturn {
 // We are NOT changing BaseService — this is a read-only session check only.
 const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 // ── CHANGED END ──
 
@@ -44,7 +44,9 @@ export function useEvents(options: UseEventsOptions = {}): UseEventsReturn {
     // ── CHANGED START ──
     // Added session check — if no user session exists, skip the fetch entirely
     // instead of letting it hit getCurrentUserId() and throw "Unauthorized"
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       setError('Not logged in — please sign in to see events.');
       return;
@@ -69,21 +71,17 @@ export function useEvents(options: UseEventsOptions = {}): UseEventsReturn {
     }
   }, [fetchEvents, autoFetch]);
 
-  const insertClubEvent = useCallback(
-    async (eventData: EventInsert): Promise<Event> => {
-      const newEvent = await eventService.insertClubEvent(eventData);
-      setEvents((prev) => [...prev, newEvent]);
-      return newEvent;
-    }, []
-  );
+  const insertClubEvent = useCallback(async (eventData: EventInsert): Promise<Event> => {
+    const newEvent = await eventService.insertClubEvent(eventData);
+    setEvents((prev) => [...prev, newEvent]);
+    return newEvent;
+  }, []);
 
-  const updateClubEvent = useCallback(
-    async (eventData: EventInsert): Promise<Event> => {
-      const updated = await eventService.updateClubEvent(eventData);
-      setEvents((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
-      return updated;
-    }, []
-  );
+  const updateClubEvent = useCallback(async (eventData: EventInsert): Promise<Event> => {
+    const updated = await eventService.updateClubEvent(eventData);
+    setEvents((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
+    return updated;
+  }, []);
 
   const getAllUpcomingClubEvents = useCallback(async (): Promise<Event[]> => {
     return eventService.getAllUpcomingClubEvents();
@@ -92,14 +90,16 @@ export function useEvents(options: UseEventsOptions = {}): UseEventsReturn {
   const getClubEvents = useCallback(
     async (clubId: number, includePast?: false): Promise<Event[]> => {
       return eventService.getClubEvents(clubId, includePast);
-    }, []
+    },
+    [],
   );
 
   const getEventById = useCallback(
     async (eventId: number): Promise<Event | null> => {
       const local = events.find((e) => e.id === eventId);
       return local ?? null;
-    }, [events]
+    },
+    [events],
   );
 
   const updateEventLatLong = useCallback(
@@ -107,7 +107,8 @@ export function useEvents(options: UseEventsOptions = {}): UseEventsReturn {
       const updated = await eventService.updateEventLatLong(eventId, latitude, longitude);
       setEvents((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
       return updated;
-    }, []
+    },
+    [],
   );
 
   const updateEventLocation = useCallback(
@@ -115,7 +116,8 @@ export function useEvents(options: UseEventsOptions = {}): UseEventsReturn {
       const updated = await eventService.updateEventLocation(eventId, location);
       setEvents((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
       return updated;
-    }, []
+    },
+    [],
   );
 
   return {

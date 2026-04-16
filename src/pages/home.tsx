@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { useAuth } from 'context/AuthContext';
 import createClient from 'lib/supabase';
 import BottomNav from '@/components';
-import styles from '../styles/home.module.css';
 import Wardrobe from '@components/Wardrobe';
 import { useUsers } from '@/hooks/useUsers';
+import styles from '../styles/home.module.css';
 
 interface Event {
   id: number;
