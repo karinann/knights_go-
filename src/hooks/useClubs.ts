@@ -28,6 +28,8 @@ export interface UseClubsReturn {
   updateClub: (id: number, updates: ClubUpdate) => Promise<Club | null>;
   deleteClub: (id: number) => Promise<boolean>;
   getAllClubsByParams: (params?: SearchClubsParams) => Promise<Club[]>;
+  updateClubSprite: (userId: number, clubId: number, spriteUrl: string) => Promise<Club>;
+  updateClubLogo: (userId: number, clubId: number, logoUrl: string) => Promise<Club>;
 }
 
 export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
@@ -120,5 +122,7 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
     updateClub,
     deleteClub,
     getAllClubsByParams,
+    updateClubSprite,
+    updateClubLogo,
   };
 }

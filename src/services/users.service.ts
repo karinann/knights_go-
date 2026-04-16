@@ -1,3 +1,6 @@
+// import type { RoleWithClub } from '@/types/types';
+// import { BaseService } from './base.service';
+// import type { User, UserUpdate } from '../types/database.types';
 import type { MonDressUpUrls, RoleWithClub } from '@/types/types';
 import type { User, UserUpdate } from './index';
 import { BaseService } from './base.service';
@@ -40,6 +43,23 @@ export class UserService extends BaseService {
   // Edit user
   async updateUser(id: number, data: UserUpdate): Promise<User> {
     try {
+      // // Ensure users can update only their profile
+      // const currentUserID = await this.getCurrentUserId();
+
+      // // Get user profile for checking if user has permissions
+      // const { data: user, error: userError } = await this.supabase
+      //   .from('users')
+      //   .select('id')
+      //   .eq('id', currentUserID)
+      //   .single();
+
+      // if (userError || !user) {
+      //   throw new Error('User profile not found');
+      // }
+
+      // if (user.id !== id) {
+      //   throw new Error('You can only update your own profile');
+      // }
       const currentUserID = await this.getCurrentUserId();
 
       if (currentUserID !== id) {
@@ -82,7 +102,7 @@ export class UserService extends BaseService {
 
   // Get clubs that the user is in; returns the user's role and club name, desc,
   // category, and logo_url
-  async getMyClubs(userId: number, limit: 10, offset: 0): Promise<RoleWithClub[]> {
+  async getMyClubs(userId: number): Promise<RoleWithClub[]> {
     try {
       const currentUserID = await this.getCurrentUserId();
 
@@ -121,6 +141,30 @@ export class UserService extends BaseService {
     } catch (err) {
       this.handleError(err, 'UserService.getMyClubs');
       return [];
+    }
+  }
+
+  // Update profile picture (avatar_url)
+  async updateProfilePicture(userId: number, pfpUrl: string): Promise<User> {
+    try {
+      const currentUserID = await this.getCurrentUserId();
+
+      if (currentUserID !== userId) {
+        throw new Error('You can only dress your own Mon!');
+      }
+
+      const { data, error } = await this.supabase
+        .from('users')
+        .update({ avatar_url: pfpUrl })
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      this.handleError(error, 'userService.updateProfilePicture');
+      throw error;
     }
   }
 

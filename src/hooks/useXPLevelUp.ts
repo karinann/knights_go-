@@ -29,11 +29,6 @@ export interface UseXPLevelUpReturn {
 
   // In case you want to have a leaderboard for xp levels
   getXPLeaderboard: (limit: 10) => Promise<XpLeaderboardUser[]>;
-
-  // Awards XP to user (its inside the attendance data) after check in
-  // You should probably not use this directly; the event.attendance hook
-  // handles it
-  awardEventCheckInXP: (attendanceId: number) => Promise<XpCheckInStats>;
 }
 
 /*
@@ -55,6 +50,9 @@ export function useXPLevelUp(options: UseXPLevelUpOptions = {}): UseXPLevelUpRet
     awardXP,
     getUserLevelInfo,
     getXPLeaderboard,
-    awardEventCheckInXP
+<<<<<<< HEAD
+    awardEventCheckInXP,
+=======
+>>>>>>> main
   };
 }

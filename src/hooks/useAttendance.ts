@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { XpLevelUpInfo } from '@/types/types';
+import { XpLevelUpInfo, EventAttendanceSheet, EventFilters } from '@/types/types';
 import { eventAttendanceService } from '../services/event.attendance.service';
 import type { Attendance } from '../services/index';
 
@@ -33,6 +33,10 @@ export interface UseAttendanceReturn {
 
   // Checks if a user has registered for an event
   isUserRegistered: (eventId: number) => Promise<boolean>;
+
+  // Gets all user's registered events within a club
+  // Filter by: club id, upcoming, and past. No filters = getAll
+  getAllMyEvents: (filters?: EventFilters) => Promise<EventAttendanceSheet[]>;
 }
 
 /*
@@ -53,6 +57,10 @@ export function useAttendance(options: UseAttendanceOptions = {}): UseAttendance
     registerUserForClubEvent,
     checkInEvent,
     getEventRegistrations,
-    isUserRegistered
+    isUserRegistered,
+<<<<<<< HEAD
+=======
+    getAllMyEvents,
+>>>>>>> main
   };
 }

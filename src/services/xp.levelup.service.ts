@@ -1,6 +1,6 @@
 import { BaseService } from './base.service';
 import type { XPLevel } from './index';
-import type { XpCheckInStats, XpInfo, XpLeaderboardUser, XpLevelUpInfo } from '../types/types';
+import type { XpInfo, XpLeaderboardUser, XpLevelUpInfo } from '../types/types';
 
 // eslint-disable-next-line import/prefer-default-export
 export class XPLevelUpService extends BaseService {
@@ -204,67 +204,6 @@ export class XPLevelUpService extends BaseService {
       return leaderboard;
     } catch (error) {
       this.handleError(error, 'getXPLeaderboard');
-      throw error;
-    }
-  }
-
-  // Award XP for event check-in and get title info
-  async awardEventCheckInXP(attendanceId: number): Promise<XpCheckInStats> {
-    try {
-      // Get attendance record with event details
-      const { data: attendance, error: attendanceError } = await this.supabase
-        .from('event_attendance')
-        .select(
-          `
-          *,
-          events:event_id (
-            base_xp,
-            bonus_xp,
-            event_name
-          )
-        `,
-        )
-        .eq('id', attendanceId)
-        .single();
-
-      if (attendanceError || !attendance) {
-        throw new Error('Attendance record not found');
-      }
-
-      const totalXP = (attendance.events.base_xp || 10) + (attendance.events.bonus_xp || 0);
-
-      // Award the XP
-      const result = await this.awardXP(attendance.user_id, totalXP);
-
-      // Update attendance record to mark XP as awarded
-      const { error: updateError } = await this.supabase
-        .from('event_attendance')
-        .update({
-          xp_given: attendance.events.base_xp || 10,
-          bonus_xp: attendance.events.bonus_xp || 0,
-        })
-        .eq('id', attendanceId);
-
-      if (updateError) throw updateError;
-
-      // Get updated user data
-      const { data: updatedUser, error: userError } = await this.supabase
-        .from('users')
-        .select('experience_points, experience_level')
-        .eq('id', attendance.user_id)
-        .single();
-
-      if (userError) throw userError;
-
-      return {
-        userXP: { ...updatedUser },
-        leveledUp: result.leveledUp,
-        oldTitle: result.oldTitle || 'Member',
-        newTitle: result.newTitle || 'Member',
-        xpEarned: totalXP,
-      };
-    } catch (error) {
-      this.handleError(error, 'awardEventCheckInXP');
       throw error;
     }
   }

@@ -1,4 +1,4 @@
-import { Club } from '../services/index';
+import { Club, Attendance, Event } from '../services/index';
 
 // For storing all of user's clubs
 export interface RoleWithClub {
@@ -96,4 +96,20 @@ export interface MonDressUpUrls {
   mon_hat_url: string | null;
   mon_shirt_url: string | null;
   mon_wand_url: string | null;
+}
+
+export interface EventAttendanceSheet {
+  attendance: Attendance;
+  event: Event;
+  club: {
+    id: number;
+    club_name: string;
+    logo_url: string | null;
+  };
+}
+
+export interface EventFilters {
+  clubId?: number;
+  upcoming?: boolean;
+  past?: boolean;
 }
