@@ -1,27 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import { clubService } from '../services/clubs.service';
 import type { Club, ClubInsert, ClubUpdate } from '../services/index';
-
 // Interface for hook options
 export interface UseClubsOptions {
   limit?: number; // How many clubs to fetch
   autoFetch?: boolean; // Whether to fetch automatically
 }
-
 export interface SearchClubsParams {
   category?: Club['category'];
   club_name?: string;
   limit?: number;
   offset?: number;
 }
-
 // Interface for hook return value
 export interface UseClubsReturn {
   // State
   clubs: Club[];
   loading: boolean;
   error: string | null;
-
   // Actions
   refetch: () => Promise<void>;
   createClub: (club: ClubInsert) => Promise<Club | null>;
@@ -31,15 +27,12 @@ export interface UseClubsReturn {
   updateClubSprite: (userId: number, clubId: number, spriteUrl: string) => Promise<Club>;
   updateClubLogo: (userId: number, clubId: number, logoUrl: string) => Promise<Club>;
 }
-
 export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
   const { limit = 10, autoFetch = true } = options;
-
   // Main states
   const [clubs, setClubs] = useState<Club[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const fetchClubs = useCallback(async () => {
     try {
       setLoading(true); // Start loading
@@ -52,7 +45,6 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
       setLoading(false); // Always stop loading
     }
   }, [limit]);
-
   const createClub = useCallback(async (club: ClubInsert): Promise<Club | null> => {
     try {
       setError(null); // Clear errors
@@ -64,27 +56,22 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
       return null; // failure case
     }
   }, []);
-
   const updateClub = useCallback(async (id: number, updates: ClubUpdate): Promise<Club | null> => {
     try {
       setError(null);
       const updatedClub = await clubService.updateClub(id, updates);
-
       // Update only specified club in array
       setClubs((prev) => prev.map((club) => (club.id === id ? updatedClub : club)));
-
       return updatedClub;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update club');
       return null;
     }
   }, []);
-
   const deleteClub = useCallback(async (id: number): Promise<boolean> => {
     try {
       setError(null);
       await clubService.deleteClub(id);
-
       // Remove from local state
       setClubs((prev) => prev.filter((club) => club.id !== id));
       return true; // deleted success
@@ -93,7 +80,6 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
       return false; // not deleted
     }
   }, []);
-
   const getAllClubsByParams = useCallback(async (params?: SearchClubsParams): Promise<Club[]> => {
     try {
       setError(null);
@@ -106,17 +92,41 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
     }
   }, []);
 
+  // ── CHANGED START ──
+  // Added missing updateClubSprite — was in the return and interface but never defined
+  const updateClubSprite = useCallback(
+    async (userId: number, clubId: number, spriteUrl: string): Promise<Club> => {
+      const updated = await clubService.updateClubSprite(userId, clubId, spriteUrl);
+      // Patch local state so UI updates immediately without a refetch
+      setClubs((prev) => prev.map((club) => (club.id === clubId ? updated : club)));
+      return updated;
+    },
+    []
+  );
+  // ── CHANGED END ──
+
+  // ── CHANGED START ──
+  // Added missing updateClubLogo — was in the return and interface but never defined
+  const updateClubLogo = useCallback(
+    async (userId: number, clubId: number, logoUrl: string): Promise<Club> => {
+      const updated = await clubService.updateClubLogo(userId, clubId, logoUrl);
+      // Patch local state so UI updates immediately without a refetch
+      setClubs((prev) => prev.map((club) => (club.id === clubId ? updated : club)));
+      return updated;
+    },
+    []
+  );
+  // ── CHANGED END ──
+
   useEffect(() => {
     if (autoFetch) {
       fetchClubs();
     }
   }, [fetchClubs, autoFetch]); // Runs when function or autoFetch changes
-
   return {
     clubs,
     loading,
     error,
-
     refetch: fetchClubs,
     createClub,
     updateClub,
