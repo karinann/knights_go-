@@ -6,6 +6,8 @@ import { useAuth } from 'context/AuthContext';
 import createClient from 'lib/supabase';
 import BottomNav from '@/components';
 import styles from '../styles/home.module.css';
+import Wardrobe from '@components/Wardrobe';
+import { useUsers } from '@/hooks/useUsers';
 
 interface Event {
   id: number;
@@ -18,6 +20,9 @@ interface Event {
 interface UserProfile {
   first_name: string;
   mon_url: string | null;
+  mon_shirt_url: string | null;
+  mon_hat_url: string | null;
+  mon_wand_url: string | null;
   experience_points: number | null;
   experience_level: number | null;
   club_ids: string[] | null;
@@ -30,6 +35,20 @@ export default function HomePage() {
   const [nextEvent, setNextEvent] = useState<Event | null>(null);
   const [eventsAttended, setEventsAttended] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [showWardrobe, setShowWardrobe] = useState(false);
+  const { getMonUrls } = useUsers({ autoFetch: false });
+
+  const [previewGear, setPreviewGear] = useState<{
+    base: string | null;
+    hat: string | null;
+    shirt: string | null;
+    wand: string | null;
+  }>({
+    base: null,
+    hat: null,
+    shirt: null,
+    wand: null,
+  });
 
   useEffect(() => {
     if (!user) {
@@ -39,17 +58,59 @@ export default function HomePage() {
     fetchData();
   }, [user]);
 
+  useEffect(() => {
+    if (profile) {
+      setPreviewGear({
+        base: profile.mon_url,
+        hat: profile.mon_hat_url,
+        shirt: profile.mon_shirt_url,
+        wand: profile.mon_wand_url,
+      });
+    }
+  }, [profile]);
+
   async function fetchData() {
     const supabase = createClient();
 
     // fetch user profile
     const { data: profileData } = await supabase
       .from('users')
-      .select('first_name, mon_url, experience_points, experience_level, club_ids')
+      .select(
+        'first_name, mon_url, mon_shirt_url, mon_hat_url, mon_wand_url, experience_points, experience_level, club_ids',
+      )
       .eq('user_id', user?.id)
       .single();
 
-    if (profileData) setProfile(profileData);
+    if (profileData) {
+      setProfile(profileData);
+      // also fetch mon urls through the hook to keep things in sync
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('user_id', user?.id)
+        .single();
+
+      if (userData) {
+        const monUrls = await getMonUrls(userData.id);
+        setPreviewGear({
+          base: monUrls.mon_url,
+          hat: monUrls.mon_hat_url,
+          shirt: monUrls.mon_shirt_url,
+          wand: monUrls.mon_wand_url,
+        });
+      }
+    }
+
+    // fetch user profile
+    // const { data: profileData } = await supabase
+    //   .from('users')
+    //   .select(
+    //     'first_name, mon_url, mon_shirt_url, mon_hat_url, mon_wand_url, experience_points, experience_level, club_ids',
+    //   )
+    //   .eq('user_id', user?.id)
+    //   .single();
+
+    // if (profileData) setProfile(profileData);
 
     // fetch next upcoming event
     const { data: eventData } = await supabase
@@ -94,9 +155,12 @@ export default function HomePage() {
       <div className={styles.backdropSection}>
         {/* top buttons: knight wardrobe, qr code scanner */}
         <div className={styles.topBar}>
-          <Link href="/closet" className={styles.iconButton}>
+          <div onClick={() => setShowWardrobe(true)} className={styles.iconButton}>
             <Image src="/icons/closet.png" alt="Closet" width={35} height={35} />
-          </Link>
+          </div>
+          {/* <Link href="/profile/knight" className={styles.iconButton}>
+            <Image src="/icons/closet.png" alt="Closet" width={35} height={35} />
+          </Link> */}
           <Link href="/qr/scan" className={styles.iconButton}>
             <Image src="/icons/qr-icon.png" alt="QR Code Scanner" width={20} height={20} />
           </Link>
@@ -114,7 +178,7 @@ export default function HomePage() {
 
         {/* knight overlaid on backdrop */}
         <div className={styles.knightOverlay}>
-          {profile?.mon_url && (
+          {/* {profile?.mon_url && (
             <Image
               src={profile.mon_url}
               alt="Your knight"
@@ -123,7 +187,46 @@ export default function HomePage() {
               className={styles.knightImage}
               priority
             />
+          )} */}
+          {previewGear.base && (
+            <>
+              <Image
+                src={previewGear.base}
+                width={350}
+                height={350}
+                className={styles.knightImage}
+                alt="base"
+              />
+              {previewGear.shirt && (
+                <Image
+                  src={previewGear.shirt}
+                  width={350}
+                  height={350}
+                  className={styles.layer}
+                  alt="shirt"
+                />
+              )}
+              {previewGear.hat && (
+                <Image
+                  src={previewGear.hat}
+                  width={350}
+                  height={350}
+                  className={styles.layer}
+                  alt="hat"
+                />
+              )}
+              {previewGear.wand && (
+                <Image
+                  src={previewGear.wand}
+                  width={350}
+                  height={350}
+                  className={styles.layer}
+                  alt="wand"
+                />
+              )}
+            </>
           )}
+          {/* <div className={styles.knightWrapper}></div> */}
 
           {/* xp bar sits just below knight */}
           <div className={styles.xpSection}>
@@ -140,7 +243,15 @@ export default function HomePage() {
 
       {/* parchment card */}
       <div className={styles.card}>
-        {loading ? (
+        {showWardrobe ? (
+          <Wardrobe
+            previewGear={previewGear}
+            setPreviewGear={setPreviewGear}
+            profile={profile}
+            userLevel={profile?.experience_level ?? 1}
+            onClose={() => setShowWardrobe(false)}
+          />
+        ) : loading ? (
           <p className={styles.hint}>Loading...</p>
         ) : (
           <>

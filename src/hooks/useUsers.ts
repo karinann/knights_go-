@@ -108,6 +108,79 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
     }
   }, []);
 
+  const updateMonHatUrl = useCallback(async (userId: number, hatUrl: string) => {
+    try {
+      setError(null);
+      return await userService.updateMonHatUrl(userId, hatUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update hat');
+      throw err;
+    }
+  }, []);
+
+  const updateMonShirtUrl = useCallback(async (userId: number, shirtUrl: string) => {
+    try {
+      setError(null);
+      return await userService.updateMonShirtUrl(userId, shirtUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update shirt');
+      throw err;
+    }
+  }, []);
+
+  const updateMonWandUrl = useCallback(async (userId: number, wandUrl: string) => {
+    try {
+      setError(null);
+      return await userService.updateMonWandUrl(userId, wandUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update wand');
+      throw err;
+    }
+  }, []);
+
+  const getMonUrls = useCallback(async (userId: number) => {
+    try {
+      setError(null);
+      return await userService.getMonUrls(userId);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch mon urls');
+      throw err;
+    }
+  }, []);
+  
+  const getMyClubs = useCallback(async (userId: number) => {
+    try {
+      setError(null);
+      return await userService.getMyClubs(userId);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch clubs');
+      return [];
+    }
+  }, []);
+
+  const updateMonBaseUrl = useCallback(async (userId: number, monUrl: string) => {
+    try {
+      setError(null);
+      return await userService.updateMonBaseUrl(userId, monUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update base mon');
+      throw err;
+    }
+  }, []);
+
+  const updateProfilePicture = useCallback(
+    async (userId: number, pfpUrl: string): Promise<User> => {
+      try {
+        setError(null);
+        return await userService.updateProfilePicture(userId, pfpUrl);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to update profile picture');
+        throw err;
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     if (autoFetch) {
       fetchUsers();
@@ -129,5 +202,6 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
     updateMonShirtUrl,
     updateMonWandUrl,
     getMonUrls,
+    updateProfilePicture,
   };
 }
