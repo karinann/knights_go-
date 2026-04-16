@@ -1,11 +1,8 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useState } from 'react';
-import { useMap } from 'react-leaflet';
-import BottomNav from '@/components';
-import styles from '../../styles/BottomNav.module.css';
-import { useEvents } from '/Users/jaetr/knights_go--1/src/hooks/useEvents';
-import type { Event } from '/Users/jaetr/knights_go--1/src/services/index.ts';
+import { useEvents } from '../../hooks/useEvents';
+import type { Event } from '../services/index.ts';
 
 // EventItem is now just the DB Event type aliased for clarity
 type EventItem = Event;
@@ -49,9 +46,7 @@ function MapView() {
   }
 
   // ── Filter out events that don't have coordinates yet ───────────────────
-  const mappableEvents = events.filter(
-    (e) => e.latitude != null && e.longitude != null
-  );
+  const mappableEvents = events.filter((e) => e.latitude != null && e.longitude != null);
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
@@ -60,17 +55,13 @@ function MapView() {
       <div style={{ width: '75%', height: '100%' }}>
 
         {/* Loading / error banners — sit above the map */}
-        {loading && (
-          <div style={bannerStyle('#f0f4ff', '#1565C0')}>Loading events…</div>
-        )}
-        {error && (
-          <div style={bannerStyle('#fff0f0', '#c62828')}>Error: {error}</div>
-        )}
+        {loading && <div style={bannerStyle('#f0f4ff', '#1565C0')}>Loading events…</div>}
+        {error && <div style={bannerStyle('#fff0f0', '#c62828')}>Error: {error}</div>}
 
         <MapContainer
           center={mapCenter}
           zoom={17}
-          scrollWheelZoom={true}
+          scrollWheelZoom
           style={{ height: '100%', width: '100%' }}
         >
           <ChangeView center={mapCenter} />
@@ -80,18 +71,13 @@ function MapView() {
           />
 
           {mappableEvents.map((event) => (
-            <Marker
-              key={event.id}
-              position={[event.latitude!, event.longitude!]}
-              icon={customIcon}
-            >
+            <Marker key={event.id} position={[event.latitude!, event.longitude!]} icon={customIcon}>
               <Popup>
                 <div>
                   <h3>{event.event_name}</h3>
                   <p>{event.location ?? 'Location TBD'}</p>
-                  <p>{event.event_date
-                    ? new Date(event.event_date).toLocaleString()
-                    : 'Time TBD'}
+                  <p>
+                    {event.event_date ? new Date(event.event_date).toLocaleString() : 'Time TBD'}
                   </p>
                   <button onClick={() => saveEvent(event)}>Save Event</button>
                 </div>
@@ -143,8 +129,13 @@ function MapView() {
               <button
                 onClick={() => removeEvent(savedEvent.id)}
                 style={{
-                  fontSize: '12px', padding: '4px 8px', borderRadius: '6px',
-                  border: 'none', backgroundColor: '#C8E6C9', color: '#2E7D32', cursor: 'pointer',
+                  fontSize: '12px',
+                  padding: '4px 8px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: '#C8E6C9',
+                  color: '#2E7D32',
+                  cursor: 'pointer',
                 }}
               >
                 Remove
@@ -153,9 +144,14 @@ function MapView() {
               <button
                 onClick={() => goToEvent(savedEvent.id)}
                 style={{
-                  fontSize: '12px', padding: '4px 8px', borderRadius: '6px',
-                  border: 'none', marginLeft: '6px', backgroundColor: '#E3F2FD',
-                  color: '#1565C0', cursor: 'pointer',
+                  fontSize: '12px',
+                  padding: '4px 8px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  marginLeft: '6px',
+                  backgroundColor: '#E3F2FD',
+                  color: '#1565C0',
+                  cursor: 'pointer',
                 }}
               >
                 View
@@ -171,9 +167,15 @@ function MapView() {
 // Small helper so the loading/error banners don't clutter the JSX
 function bannerStyle(bg: string, color: string): React.CSSProperties {
   return {
-    position: 'absolute', zIndex: 1000, top: 8, left: 8,
-    padding: '6px 12px', borderRadius: '8px',
-    backgroundColor: bg, color, fontSize: '13px',
+    position: 'absolute',
+    zIndex: 1000,
+    top: 8,
+    left: 8,
+    padding: '6px 12px',
+    borderRadius: '8px',
+    backgroundColor: bg,
+    color,
+    fontSize: '13px',
   };
 }
 
