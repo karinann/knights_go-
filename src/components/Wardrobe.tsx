@@ -3,18 +3,29 @@ import Image from 'next/image';
 import createClient from 'lib/supabase';
 import { useAuth } from 'context/AuthContext';
 import styles from '../styles/wardrobe.module.css';
+import { useUsers } from '@/hooks/useUsers';
 
-type Category = 'hat' | 'shirt' | 'wand';
+type Category = 'base' | 'hat' | 'shirt' | 'wand';
 
 type Gear = {
+  base: string | null;
   hat: string | null;
   shirt: string | null;
   wand: string | null;
 };
 
+type UserProfile = {
+  mon_url: string | null;
+  mon_hat_url: string | null;
+  mon_shirt_url: string | null;
+  mon_wand_url: string | null;
+};
+
 type Props = {
   previewGear: Gear;
   setPreviewGear: React.Dispatch<React.SetStateAction<Gear>>;
+  profile: UserProfile | null;
+  userLevel: number;
   onClose: () => void;
 };
 
@@ -29,6 +40,11 @@ interface WardrobeItem {
 // TEMP mock data — replace with backend fetch once endpoints are ready
 // requiredLevel: 0 = starter item, available to everyone
 const ITEMS: Record<Category, WardrobeItem[]> = {
+  base: [
+    { url: '/icons/knight1.png', label: 'Poor Guy dont got a name yet', requiredLevel: 0 },
+    { url: '/icons/knight2.png', label: 'Jimothy', requiredLevel: 0 },
+    { url: '/icons/knight3.png', label: 'Timothy', requiredLevel: 0 },
+  ],
   hat: [
     { url: '/items/flowercrown.png', label: 'Flower crown', requiredLevel: 0 },
     { url: '/items/crown.png', label: 'Crown', requiredLevel: 3 },
@@ -38,20 +54,30 @@ const ITEMS: Record<Category, WardrobeItem[]> = {
 };
 
 const TABS: { key: Category; label: string }[] = [
+  { key: 'base', label: 'Knight' },
   { key: 'hat', label: 'Hats' },
   { key: 'shirt', label: 'Shirts' },
-  { key: 'wand', label: 'Wands' },
+  { key: 'wand', label: 'Hand' },
 ];
 
-export default function Wardrobe({ previewGear, setPreviewGear, onClose }: Props) {
+export default function Wardrobe({
+  previewGear,
+  setPreviewGear,
+  profile,
+  userLevel,
+  onClose,
+}: Props) {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Category>('hat');
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { updateMonBaseUrl, updateMonHatUrl, updateMonShirtUrl, updateMonWandUrl } = useUsers({
+    autoFetch: false,
+  });
 
   // user's current level — used to determine which items are unlocked
   // TODO: pull this from profile once save endpoint is ready
-  const userLevel = 1;
+  //   const userLevel = 1;
 
   function handleSelect(category: Category, url: string) {
     // toggle off if already selected, otherwise select it
@@ -63,42 +89,39 @@ export default function Wardrobe({ previewGear, setPreviewGear, onClose }: Props
 
   async function handleSave() {
     if (!user) return;
+
     setSaving(true);
     setError(null);
 
-    const supabase = createClient();
+    try {
+      // First get DB user id (IMPORTANT)
+      const supabase = createClient();
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
 
-    // get user's integer id
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('user_id', user.id)
-      .single();
+      if (userError || !userData) {
+        throw new Error('Could not find your profile.');
+      }
 
-    if (userError || !userData) {
-      setError('Could not find your profile.');
+      const userId = userData.id;
+
+      // Update all gear
+      await Promise.all([
+        updateMonBaseUrl(userId, previewGear.base ?? ''),
+        updateMonHatUrl(userId, previewGear.hat ?? ''),
+        updateMonShirtUrl(userId, previewGear.shirt ?? ''),
+        updateMonWandUrl(userId, previewGear.wand ?? ''),
+      ]);
+
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save');
+    } finally {
       setSaving(false);
-      return;
     }
-
-    // save the equipped items to the users table
-    const { error: updateError } = await supabase
-      .from('users')
-      .update({
-        mon_hat_url: previewGear.hat,
-        mon_shirt_url: previewGear.shirt,
-        mon_wand_url: previewGear.wand,
-      })
-      .eq('id', userData.id);
-
-    if (updateError) {
-      setError(updateError.message);
-      setSaving(false);
-      return;
-    }
-
-    setSaving(false);
-    onClose();
   }
 
   return (
@@ -190,11 +213,25 @@ export default function Wardrobe({ previewGear, setPreviewGear, onClose }: Props
 
       {/* actions */}
       <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.cancel}
+          onClick={() => {
+            if (profile) {
+              setPreviewGear({
+                base: profile.mon_url,
+                hat: profile.mon_hat_url,
+                shirt: profile.mon_shirt_url,
+                wand: profile.mon_wand_url,
+              });
+            }
+            onClose();
+          }}
+        >
+          Cancel
+        </button>
         <button type="button" className={styles.save} onClick={handleSave} disabled={saving}>
           {saving ? 'Saving...' : 'Save & Exit'}
-        </button>
-        <button type="button" className={styles.cancel} onClick={onClose}>
-          Cancel
         </button>
       </div>
     </div>

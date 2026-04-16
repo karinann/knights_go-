@@ -50,10 +50,23 @@
   align-items: center;
   width: 350px;
 }
+.knightWrapper {
+  position: relative;
+  width: 350px;
+  height: 350px;
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: contain;
+}
 
 .knightImage {
-  object-fit: contain;
-  margin-bottom: 8px;
+  /* object-fit: contain; */
+  /* margin-bottom: 8px; */
 }
 
 .xpSection {
@@ -104,6 +117,7 @@
   padding: 1.25rem;
   border-top-left-radius: 10%;
   border-top-right-radius: 10%;
+  overflow-y: auto;
 }
 
 .sectionLabel {

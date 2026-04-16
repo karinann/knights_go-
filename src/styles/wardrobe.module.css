@@ -42,18 +42,19 @@
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  border: 1.5px solid var(--color-border);
+  /* border: 1.5px solid var(--color-bg-button); */
 }
 
 .tab {
   background: var(--color-bg-input);
+  border: var(--color-bg-input-outline);
   color: var(--color-text-body);
 }
 
 .tabActive {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-text-light);
+  background: var(--color-bg-input);
+  border: 2.5px solid #8a7e60;
+  color: var(--color-text-body);
 }
 
 .grid {
@@ -76,7 +77,7 @@
 }
 
 .itemEquipped {
-  border-color: var(--color-primary);
+  border: 2px solid #638a60;
   background: #e8f2e0;
 }
 
@@ -130,8 +131,8 @@
 .save {
   flex: 1;
   padding: 12px;
-  background: var(--color-primary);
-  color: var(--color-text-light);
+  background: var(--color-bg-input);
+  color: var(--color-text-body);
   border: none;
   border-radius: 8px;
   font-size: 15px;
