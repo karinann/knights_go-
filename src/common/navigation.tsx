@@ -28,7 +28,7 @@ const bottomNavigation = [
   {
     id: 5,
     label: 'QR Code',
-    href: '/qr/scan',
+    href: '/qr_page',
     icon: <Image src="/icons/qr-icon.png" alt="QR Code Scanner" width={25} height={25} />,
   },
 ];
