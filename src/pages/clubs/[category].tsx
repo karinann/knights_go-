@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useClubs } from '@/hooks/useClubs';
 import type { Club } from '@/services';
-import type { ClubCategory } from '../manageclubs';
 import shared from '@styles/auth.module.css';
+import type { ClubCategory } from '../manageclubs';
 import styles from '../signup/clubs/category.module.css';
 
 const PAGE_SIZE = 20;

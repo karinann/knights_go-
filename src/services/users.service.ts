@@ -1,6 +1,12 @@
+<<<<<<< HEAD
+import type { RoleWithClub } from '@/types/types';
+import { BaseService } from './base.service';
+import type { User, UserUpdate } from '../types/database.types';
+=======
 import type { MonDressUpUrls, RoleWithClub } from '@/types/types';
 import type { User, UserUpdate } from './index';
 import { BaseService } from './base.service';
+>>>>>>> main
 
 export class UserService extends BaseService {
   // Get all users
@@ -40,11 +46,31 @@ export class UserService extends BaseService {
   // Edit user
   async updateUser(id: number, data: UserUpdate): Promise<User> {
     try {
+<<<<<<< HEAD
+      // // Ensure users can update only their profile
+      // const currentUserID = await this.getCurrentUserId();
+
+      // // Get user profile for checking if user has permissions
+      // const { data: user, error: userError } = await this.supabase
+      //   .from('users')
+      //   .select('id')
+      //   .eq('id', currentUserID)
+      //   .single();
+
+      // if (userError || !user) {
+      //   throw new Error('User profile not found');
+      // }
+
+      // if (user.id !== id) {
+      //   throw new Error('You can only update your own profile');
+      // }
+=======
       const currentUserID = await this.getCurrentUserId();
 
       if (currentUserID !== id) {
         throw new Error('You can only dress your own Mon!');
       }
+>>>>>>> main
 
       // Update user info
       const { data: updatedUser, error: userUpdateError } = await this.supabase
@@ -86,10 +112,13 @@ export class UserService extends BaseService {
     try {
       const currentUserID = await this.getCurrentUserId();
 
+<<<<<<< HEAD
+=======
       if (currentUserID !== userId) {
         throw new Error('You can only get your own clubs!');
       }
 
+>>>>>>> main
       const { data: memberships, error: membershipError } = await this.supabase
         .from('club_memberships')
         .select(

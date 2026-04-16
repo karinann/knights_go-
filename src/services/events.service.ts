@@ -139,20 +139,142 @@ export class EventService extends BaseService {
     }
   }
 
-  // Get a single event by ID
-  async getEventById(eventId: number): Promise<Event | null> {
+  // Update event's latitude and longitude
+  async updateEventLatLong(eventId: number, latitude: number, longitude: number): Promise<Event> {
     try {
-      const { data, error } = await this.supabase
+      const userId = await this.getCurrentUserId();
+
+      // Get the event details first to check club ownership
+      const { data: event, error: eventError } = await this.supabase
         .from('events')
-        .select('*')
+        .select('club_id, event_name, status')
         .eq('id', eventId)
         .single();
 
+      if (eventError || !event) {
+        throw new Error('Event not found');
+      }
+
+      // Check if event is cancelled or completed
+      if (event.status === 'cancelled') {
+        throw new Error('Cannot update location for a cancelled event');
+      }
+
+      if (event.status === 'completed') {
+        throw new Error('Cannot update location for a completed event');
+      }
+
+      // Check user's role for this club
+      const { data: membership, error: membershipError } = await this.supabase
+        .from('club_memberships')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('club_id', event.club_id)
+        .single();
+
+      if (membershipError || !membership) {
+        throw new Error('You are not a member of this club');
+      }
+
+      // Check if user is admin or club rep
+      const isAdmin = membership.role === 'admin';
+      const isClubRep = membership.role === 'club_rep';
+
+      if (!isAdmin && !isClubRep) {
+        throw new Error('Only club representatives or admins can update event locations');
+      }
+
+      // Validate coordinates
+      if (latitude < -90 || latitude > 90) {
+        throw new Error('Latitude must be between -90 and 90');
+      }
+
+      if (longitude < -180 || longitude > 180) {
+        throw new Error('Longitude must be between -180 and 180');
+      }
+
+      // Update the event location
+      const { data, error } = await this.supabase
+        .from('events')
+        .update({
+          latitude,
+          longitude,
+        })
+        .eq('id', eventId)
+        .select()
+        .single();
+
       if (error) throw error;
+      if (!data) throw new Error('Failed to update event location');
 
       return data;
     } catch (error) {
-      this.handleError(error, 'getEventById');
+      this.handleError(error, 'eventService.updateEventLocation');
+      throw error;
+    }
+  }
+
+  // Update the event's string location
+  async updateEventLocation(eventId: number, location: string): Promise<Event> {
+    try {
+      const userId = await this.getCurrentUserId();
+
+      // Get the event details first to check club ownership
+      const { data: event, error: eventError } = await this.supabase
+        .from('events')
+        .select('club_id, event_name, status')
+        .eq('id', eventId)
+        .single();
+
+      if (eventError || !event) {
+        throw new Error('Event not found');
+      }
+
+      // Check if event is cancelled or completed
+      if (event.status === 'cancelled') {
+        throw new Error('Cannot update location for a cancelled event');
+      }
+
+      if (event.status === 'completed') {
+        throw new Error('Cannot update location for a completed event');
+      }
+
+      // Check user's role for this club
+      const { data: membership, error: membershipError } = await this.supabase
+        .from('club_memberships')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('club_id', event.club_id)
+        .single();
+
+      if (membershipError || !membership) {
+        throw new Error('You are not a member of this club');
+      }
+
+      // Check if user is admin or club rep
+      const isAdmin = membership.role === 'admin';
+      const isClubRep = membership.role === 'club_rep';
+
+      if (!isAdmin && !isClubRep) {
+        throw new Error('Only club representatives or admins can update event locations');
+      }
+
+      // Update the event location
+      const { data, error } = await this.supabase
+        .from('events')
+        .update({
+          location,
+        })
+        .eq('id', eventId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      if (!data) throw new Error('Failed to update event location');
+
+      return data;
+    } catch (error) {
+      this.handleError(error, 'eventService.updateEventLocation');
       throw error;
     }
   }
