@@ -1,0 +1,156 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 1rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.title {
+  font-family: var(--font-kavoon);
+  font-size: 18px;
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-body);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab,
+.tabActive {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid var(--color-border);
+}
+
+.tab {
+  background: var(--color-bg-input);
+  color: var(--color-text-body);
+}
+
+.tabActive {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-light);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.itemButton {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-input);
+  cursor: pointer;
+}
+
+.itemEquipped {
+  border-color: var(--color-primary);
+  background: #e8f2e0;
+}
+
+.itemLocked {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.itemImage {
+  object-fit: contain;
+}
+
+.itemImageLocked {
+  object-fit: contain;
+  filter: grayscale(100%);
+}
+
+.itemLabel {
+  font-size: 11px;
+  color: var(--color-text-body);
+  text-align: center;
+}
+
+.lockOverlay {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  padding: 2px 5px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: white;
+  font-size: 10px;
+}
+
+.error {
+  font-size: 13px;
+  color: var(--color-error);
+  text-align: center;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.save {
+  flex: 1;
+  padding: 12px;
+  background: var(--color-primary);
+  color: var(--color-text-light);
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancel {
+  flex: 1;
+  padding: 12px;
+  background: var(--color-bg-input);
+  color: var(--color-text-body);
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+}
