@@ -13,6 +13,10 @@ function qr() {
     <Scanner
       onScan={handleScan}
       onError={(error) => console.error(error)}
+      constraints={{
+        facingMode: 'environment',
+        aspectRatio: 1,
+      }}
     />
   );
 }
