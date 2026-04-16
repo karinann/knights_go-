@@ -122,20 +122,22 @@ export class ClubService extends BaseService {
   // Edit club
   async updateClub(clubId: number, data: ClubUpdate): Promise<Club> {
     try {
-      // const currentUserID = await this.getCurrentUserId();
+      const currentUserID = await this.getCurrentUserId();
 
       // Check membership join table for user's role
-      // const { data: membership, error: membershipError } = await this.supabase
-      //   .from('club_memberships')
-      //   .select('role')
-      //   .eq('user_id', currentUserID)
-      //   .eq('club_id', clubId)
-      //   .maybeSingle();
+      const { data: membership, error: membershipError } = await this.supabase
+        .from('club_memberships')
+        .select('role')
+        .eq('user_id', currentUserID)
+        .eq('club_id', clubId)
+        .maybeSingle();
 
-      // // if the user is either a club_rep or admin, they can edit the club
-      // if (!membership || (membership.role !== 'club_rep' && membership.role !== 'admin')) {
-      //   throw new Error('You do not have permission to edit this club');
-      // }
+      if (membershipError) throw membershipError;
+
+      // if the user is either a club_rep or admin, they can edit the club
+      if (!membership || (membership.role !== 'club_rep' && membership.role !== 'admin')) {
+        throw new Error('You do not have permission to edit this club');
+      }
 
       // Update club info
       const { data: updatedClub, error: clubUpdateError } = await this.supabase
@@ -152,6 +154,86 @@ export class ClubService extends BaseService {
     } catch (error) {
       this.handleError(error, 'ClubService.updateClub');
       throw new Error('Failed to update club');
+    }
+  }
+
+  // Update club mon picture (avatar_url)
+  async updateClubSprite(userId: number, clubId: number, spriteUrl: string): Promise<Club> {
+    try {
+      const currentUserID = await this.getCurrentUserId();
+
+      if (currentUserID !== userId) {
+        throw new Error('Only club admins can edit club sprite!!');
+      }
+
+      // Check membership join table for user's role
+      const { data: membership, error: membershipError } = await this.supabase
+        .from('club_memberships')
+        .select('role')
+        .eq('user_id', currentUserID)
+        .eq('club_id', clubId)
+        .maybeSingle();
+
+      if (membershipError) throw membershipError;
+
+      // if the user is either a club_rep or admin, they can edit the club
+      if (!membership || membership.role !== 'admin') {
+        throw new Error('Only admins can edit the club logo!');
+      }
+
+      // Update club's sprite
+      const { data, error } = await this.supabase
+        .from('clubs')
+        .update({ sprite_url: spriteUrl })
+        .eq('id', clubId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      this.handleError(error, 'clubService.updateClubSprite');
+      throw error;
+    }
+  }
+
+  // Update club mon picture (avatar_url)
+  async updateClubLogo(userId: number, clubId: number, logoUrl: string): Promise<Club> {
+    try {
+      const currentUserID = await this.getCurrentUserId();
+
+      if (currentUserID !== userId) {
+        throw new Error('Only club admins can edit club sprite!!');
+      }
+
+      // Check membership join table for user's role
+      const { data: membership, error: membershipError } = await this.supabase
+        .from('club_memberships')
+        .select('role')
+        .eq('user_id', currentUserID)
+        .eq('club_id', clubId)
+        .maybeSingle();
+
+      if (membershipError) throw membershipError;
+
+      // if the user is either a club_rep or admin, they can edit the club
+      if (!membership || membership.role !== 'admin') {
+        throw new Error('Only admins can edit the club logo!');
+      }
+
+      // Update club's sprite
+      const { data, error } = await this.supabase
+        .from('clubs')
+        .update({ logo_url: logoUrl })
+        .eq('id', clubId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      this.handleError(error, 'clubService.updateClubSprite');
+      throw error;
     }
   }
 

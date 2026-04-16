@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import type { XPLevel } from '../services/index';
 import type { XpCheckInStats, XpInfo, XpLeaderboardUser, XpLevelUpInfo } from '../types/types';
 
-
 // Interface for hook options
 export interface UseXPLevelUpOptions {
   limit?: number; // How many Attendances to fetch
@@ -20,21 +19,16 @@ export interface UseXPLevelUpReturn {
   refetch: () => Promise<void>;
 
   // Get all possible Xp levels (Page, Squire, etc.)
-  getAllLevels(): Promise<XPLevel[]>;
+  getAllLevels: () => Promise<XPLevel[]>;
 
   // Manually award xp to a user
-  awardXP(userId: number, xpAmount: number): Promise<XpLevelUpInfo>;
+  awardXP: (userId: number, xpAmount: number) => Promise<XpLevelUpInfo>;
 
   // Get detailed info about User's level stuff
   getUserLevelInfo: (userId: number) => Promise<XpInfo>;
 
   // In case you want to have a leaderboard for xp levels
   getXPLeaderboard: (limit: 10) => Promise<XpLeaderboardUser[]>;
-
-  // Awards XP to user (its inside the attendance data) after check in
-  // You should probably not use this directly; the event.attendance hook
-  // handles it
-  awardEventCheckInXP: (attendanceId: number) => Promise<XpCheckInStats>;
 }
 
 /*
@@ -56,6 +50,9 @@ export function useXPLevelUp(options: UseXPLevelUpOptions = {}): UseXPLevelUpRet
     awardXP,
     getUserLevelInfo,
     getXPLeaderboard,
-    awardEventCheckInXP
+<<<<<<< HEAD
+    awardEventCheckInXP,
+=======
+>>>>>>> main
   };
 }

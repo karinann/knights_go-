@@ -264,7 +264,10 @@ export type Database = {
           first_name: string;
           id: number;
           last_name: string;
+          mon_hat_url: string | null;
+          mon_shirt_url: string | null;
           mon_url: string | null;
+          mon_wand_url: string | null;
           user_id: string;
           user_type: string;
         };
@@ -278,7 +281,10 @@ export type Database = {
           first_name: string;
           id?: number;
           last_name: string;
+          mon_hat_url?: string | null;
+          mon_shirt_url?: string | null;
           mon_url?: string | null;
+          mon_wand_url?: string | null;
           user_id: string;
           user_type: string;
         };
@@ -292,7 +298,10 @@ export type Database = {
           first_name?: string;
           id?: number;
           last_name?: string;
+          mon_hat_url?: string | null;
+          mon_shirt_url?: string | null;
           mon_url?: string | null;
+          mon_wand_url?: string | null;
           user_id?: string;
           user_type?: string;
         };

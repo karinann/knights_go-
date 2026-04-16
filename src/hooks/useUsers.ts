@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import type { MonDressUpUrls, RoleWithClub } from '@/types/types';
 import { userService } from '../services/users.service';
 import type { User, UserUpdate } from '../services/index';
 
@@ -17,10 +18,46 @@ export interface UseUsersReturn {
 
   // Actions
   refetch: () => Promise<void>;
+
+  // Update user
   updateUser: (id: number, updates: UserUpdate) => Promise<User | null>;
+
+  // Delete user
   deleteUser: (id: number) => Promise<boolean>;
+
+  // Get all clubs associated with user ID
+  getMyClubs: (userId: number, limit: 10, offset: 0) => Promise<RoleWithClub[]>;
+
+  // Update profile picture (if u want)
+  updateProfilePicture: (userId: number, pfpUrl: string) => Promise<User>;
+
+  // Update the base model mon of user
+  updateMonBaseUrl: (userId: number, monUrl: string) => Promise<User>;
+
+  // Update the hat url of mon
+  updateMonHatUrl: (userId: number, hatUrl: string) => Promise<User>;
+
+  // Update shirt url of mon
+  updateMonShirtUrl: (userId: number, shirtUrl: string) => Promise<User>;
+
+  // Update wand url of mon
+  updateMonWandUrl: (userId: number, wandUrl: string) => Promise<User>;
+
+  // Get all dress up mon urls (base, hat, shirt, wand)
+  getMonUrls: (userId: number) => Promise<MonDressUpUrls>;
 }
 
+/**
+ *
+ * Scaffolded hook; only fetchUsers, update/delete user are done
+ * Missing:
+    getMyClubs,
+    updateMonBaseUrl,
+    updateMonHatUrl,
+    updateMonShirtUrl,
+    updateMonWandUrl,
+    getMonUrls
+ */
 export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
   const { limit = 10, autoFetch = true } = options;
 
@@ -71,6 +108,79 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
     }
   }, []);
 
+  const updateMonHatUrl = useCallback(async (userId: number, hatUrl: string) => {
+    try {
+      setError(null);
+      return await userService.updateMonHatUrl(userId, hatUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update hat');
+      throw err;
+    }
+  }, []);
+
+  const updateMonShirtUrl = useCallback(async (userId: number, shirtUrl: string) => {
+    try {
+      setError(null);
+      return await userService.updateMonShirtUrl(userId, shirtUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update shirt');
+      throw err;
+    }
+  }, []);
+
+  const updateMonWandUrl = useCallback(async (userId: number, wandUrl: string) => {
+    try {
+      setError(null);
+      return await userService.updateMonWandUrl(userId, wandUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update wand');
+      throw err;
+    }
+  }, []);
+
+  const getMonUrls = useCallback(async (userId: number) => {
+    try {
+      setError(null);
+      return await userService.getMonUrls(userId);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch mon urls');
+      throw err;
+    }
+  }, []);
+  
+  const getMyClubs = useCallback(async (userId: number) => {
+    try {
+      setError(null);
+      return await userService.getMyClubs(userId);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch clubs');
+      return [];
+    }
+  }, []);
+
+  const updateMonBaseUrl = useCallback(async (userId: number, monUrl: string) => {
+    try {
+      setError(null);
+      return await userService.updateMonBaseUrl(userId, monUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update base mon');
+      throw err;
+    }
+  }, []);
+
+  const updateProfilePicture = useCallback(
+    async (userId: number, pfpUrl: string): Promise<User> => {
+      try {
+        setError(null);
+        return await userService.updateProfilePicture(userId, pfpUrl);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to update profile picture');
+        throw err;
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     if (autoFetch) {
       fetchUsers();
@@ -81,8 +191,17 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
     users,
     loading,
     error,
+
+    // Functions
     refetch: fetchUsers,
     updateUser,
     deleteUser,
+    getMyClubs,
+    updateMonBaseUrl,
+    updateMonHatUrl,
+    updateMonShirtUrl,
+    updateMonWandUrl,
+    getMonUrls,
+    updateProfilePicture,
   };
 }

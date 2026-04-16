@@ -1,4 +1,4 @@
-import { XpLevelUpInfo } from '@/types/types';
+import { XpLevelUpInfo, EventAttendanceSheet, EventFilters } from '@/types/types';
 import { BaseService } from './base.service';
 import { Attendance, AttendanceInsert, AttendanceUpdate } from './index';
 import { xPLevelUpService } from './xp.levelup.service';
@@ -218,6 +218,79 @@ export class EventAttendanceService extends BaseService {
     } catch (error) {
       this.handleError(error, 'isUserRegistered');
       return false;
+    }
+  }
+
+  async getAllMyEvents(filters?: EventFilters): Promise<EventAttendanceSheet[]> {
+    try {
+      const userId = await this.getCurrentUserId();
+      const now = new Date().toISOString();
+
+      // Build query
+      let query = this.supabase
+        .from('event_attendance')
+        .select(
+          `
+        *,
+        events:event_id (
+          *,
+          clubs:club_id (
+            id,
+            club_name,
+            logo_url
+          )
+        )
+      `,
+        )
+        .eq('user_id', userId);
+
+      // Apply filters
+      if (filters?.clubId) {
+        query = query.eq('club_id', filters.clubId);
+      }
+
+      if (filters?.upcoming) {
+        query = query.gte('events.event_date', now);
+      }
+
+      if (filters?.past) {
+        query = query.lt('events.event_date', now);
+      }
+
+      const { data, error } = await query.order('event_date', {
+        ascending: !filters?.past, // Past: newest first, Upcoming: soonest first
+        referencedTable: 'events',
+      });
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        return [];
+      }
+
+      return data.map((record) => ({
+        attendance: {
+          id: record.id,
+          club_id: record.club_id,
+          event_id: record.event_id,
+          user_id: record.user_id,
+          status: record.status,
+          registered_at: record.registered_at,
+          checked_in_at: record.checked_in_at,
+          xp_given: record.xp_given,
+          bonus_xp: record.bonus_xp,
+          created_at: record.created_at,
+        },
+        event: record.events,
+        club: {
+          id: record.events.clubs.id,
+          club_name: record.events.clubs.club_name,
+          logo_url: record.events.clubs.logo_url,
+        },
+      }));
+    } catch (error) {
+      this.handleError(error, 'getAllMyEvents');
+      throw error;
     }
   }
 }
