@@ -40,11 +40,13 @@ export default function HomePage() {
 
   const [previewGear, setPreviewGear] = useState<{
     base: string | null;
+    baseId: string | null;
     hat: string | null;
     shirt: string | null;
     wand: string | null;
   }>({
     base: null,
+    baseId: null,
     hat: null,
     shirt: null,
     wand: null,
@@ -62,6 +64,7 @@ export default function HomePage() {
     if (profile) {
       setPreviewGear({
         base: profile.mon_url,
+        baseId: null,
         hat: profile.mon_hat_url,
         shirt: profile.mon_shirt_url,
         wand: profile.mon_wand_url,
@@ -91,9 +94,10 @@ export default function HomePage() {
         .single();
 
       if (userData) {
-        const monUrls = await getMonUrls(userData.id);
+        const monUrls = await getMonUrls();
         setPreviewGear({
           base: monUrls.mon_url,
+          baseId: null,
           hat: monUrls.mon_hat_url,
           shirt: monUrls.mon_shirt_url,
           wand: monUrls.mon_wand_url,

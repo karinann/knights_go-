@@ -160,7 +160,7 @@ export default function Wardrobe({
   onClose,
 }: Props) {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<Category>('hat');
+  const [activeTab, setActiveTab] = useState<Category>('base');
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { updateMonBaseUrl, updateMonHatUrl, updateMonShirtUrl, updateMonWandUrl } = useUsers({
