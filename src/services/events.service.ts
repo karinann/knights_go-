@@ -278,6 +278,55 @@ export class EventService extends BaseService {
       throw error;
     }
   }
+
+  // Generate QR code for event
+  async generateEventQRCode(eventId: number): Promise<string> {
+    try {
+      // Verify user is club rep/admin for this event
+      const userId = await this.getCurrentUserId();
+
+      // Get event details
+      const { data: event, error: eventError } = await this.supabase
+        .from('events')
+        .select('club_id, event_name')
+        .eq('id', eventId)
+        .single();
+
+      if (eventError || !event) {
+        throw new Error('Event not found');
+      }
+
+      // Check if user is authorized (club rep or admin)
+      const { data: membership, error: membershipError } = await this.supabase
+        .from('club_memberships')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('club_id', event.club_id)
+        .single();
+
+      if (
+        membershipError ||
+        !membership ||
+        (membership.role !== 'club_rep' && membership.role !== 'admin')
+      ) {
+        throw new Error('Only club representatives can generate QR codes');
+      }
+
+      // Create QR code data (you can customize what's included)
+      const qrData = JSON.stringify({
+        eventId,
+        type: 'event_checkin',
+        clubId: event.club_id,
+        timestamp: Date.now(),
+      });
+
+      // Frontend will convert the code into image
+      return qrData;
+    } catch (error) {
+      this.handleError(error, 'generateEventQRCode');
+      throw error;
+    }
+  }
 }
 
 export const eventService = new EventService();

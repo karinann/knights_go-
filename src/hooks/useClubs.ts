@@ -92,6 +92,14 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
     }
   }, []);
 
+  const getClubById = useCallback(
+    async (eventId: number): Promise<Club | null> => {
+      const local = clubs.find((e) => e.id === eventId);
+      return local ?? null;
+    },
+    [clubs],
+  );
+
   // ── CHANGED START ──
   // Added missing updateClubSprite — was in the return and interface but never defined
   const updateClubSprite = useCallback(async (clubId: number, spriteUrl: string): Promise<Club> => {
