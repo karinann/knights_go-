@@ -26,6 +26,7 @@ export interface UseClubsReturn {
   getAllClubsByParams: (params?: SearchClubsParams) => Promise<Club[]>;
   updateClubSprite: (clubId: number, spriteUrl: string) => Promise<Club>;
   updateClubLogo: (clubId: number, logoUrl: string) => Promise<Club>;
+  getClubById: (eventId: number) => Promise<Club | null>;
 }
 export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
   const { limit = 10, autoFetch = true } = options;
@@ -136,5 +137,6 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
     getAllClubsByParams,
     updateClubSprite,
     updateClubLogo,
+    getClubById,
   };
 }
