@@ -9,6 +9,7 @@ type Category = 'base' | 'hat' | 'shirt' | 'wand';
 
 type Gear = {
   base: string | null;
+  baseId: string | null;
   hat: string | null;
   shirt: string | null;
   wand: string | null;
@@ -32,25 +33,116 @@ type Props = {
 // each item has a url and the minimum level required to unlock it
 // level 0 = available from the start
 interface WardrobeItem {
+  id: string;
   url: string;
   label: string;
   requiredLevel: number;
+  characterId?: string;
 }
 
 // TEMP mock data — replace with backend fetch once endpoints are ready
 // requiredLevel: 0 = starter item, available to everyone
 const ITEMS: Record<Category, WardrobeItem[]> = {
   base: [
-    { url: '/icons/knight1.png', label: 'Poor Guy dont got a name yet', requiredLevel: 0 },
-    { url: '/icons/knight2.png', label: 'Jimothy', requiredLevel: 0 },
-    { url: '/icons/knight3.png', label: 'Timothy', requiredLevel: 0 },
+    {
+      id: 'knight1',
+      url: '/icons/knight1.png',
+      label: 'Poor Guy dont got a name yet',
+      requiredLevel: 0,
+    },
+    { id: 'knight2', url: '/icons/knight2.png', label: 'Jimothy', requiredLevel: 0 },
+    { id: 'knight3', url: '/icons/knight3.png', label: 'Timothy', requiredLevel: 0 },
   ],
   hat: [
-    { url: '/items/flowercrown.png', label: 'Flower crown', requiredLevel: 0 },
-    { url: '/items/crown.png', label: 'Crown', requiredLevel: 3 },
+    {
+      id: 'flowercrown',
+      url: '/items/knight1/knight1-flowercrown.png',
+      label: 'Flower crown',
+      requiredLevel: 0,
+      characterId: 'knight1',
+    },
+    {
+      id: 'flowercrown',
+      url: '/items/knight2/flowercrown.png',
+      label: 'Flower crown',
+      requiredLevel: 0,
+      characterId: 'knight2',
+    },
+    {
+      id: 'flowercrown',
+      url: '/items/knight3/knight3-flowercrown.png',
+      label: 'Flower crown',
+      requiredLevel: 0,
+      characterId: 'knight3',
+    },
   ],
-  shirt: [{ url: '/items/shirt1.png', label: 'Basic shirt', requiredLevel: 0 }],
-  wand: [{ url: '/items/wand1.png', label: 'Wand', requiredLevel: 2 }],
+  shirt: [
+    {
+      id: 'gwcshirt',
+      url: '/items/knight1/knight1-gwcshirt.png',
+      label: 'GWC Shirt',
+      requiredLevel: 0,
+      characterId: 'knight1',
+    },
+    {
+      id: 'gwcshirt',
+      url: '/items/knight2/knight2-gwcshirt.png',
+      label: 'GWC Shirt',
+      requiredLevel: 0,
+      characterId: 'knight2',
+    },
+    {
+      id: 'gwcshirt',
+      url: '/items/knight3/knight3-shirt.png',
+      label: 'GWC Shirt',
+      requiredLevel: 0,
+      characterId: 'knight3',
+    },
+  ],
+  wand: [
+    {
+      id: 'staff',
+      url: '/items/knight1/knight1-staff.png',
+      label: 'Staff',
+      requiredLevel: 0,
+      characterId: 'knight1',
+    },
+    {
+      id: 'staff',
+      url: '/items/knight2/knight2-staff.png',
+      label: 'Staff',
+      requiredLevel: 0,
+      characterId: 'knight2',
+    },
+    {
+      id: 'staff',
+      url: '/items/knight3/knight3-staff.png',
+      label: 'Staff',
+      requiredLevel: 0,
+      characterId: 'knight3',
+    },
+    {
+      id: 'badge',
+      url: '/items/knight1/knight1-badge.png',
+      label: 'UCF Badge',
+      requiredLevel: 2,
+      characterId: 'knight1',
+    },
+    {
+      id: 'badge',
+      url: '/items/knight2/knight2-badge.png',
+      label: 'UCF Badge',
+      requiredLevel: 2,
+      characterId: 'knight2',
+    },
+    {
+      id: 'badge',
+      url: '/items/knight3/knight3-badge.png',
+      label: 'UCF Badge',
+      requiredLevel: 2,
+      characterId: 'knight3',
+    },
+  ],
 };
 
 const TABS: { key: Category; label: string }[] = [
@@ -79,12 +171,24 @@ export default function Wardrobe({
   // TODO: pull this from profile once save endpoint is ready
   //   const userLevel = 1;
 
-  function handleSelect(category: Category, url: string) {
-    // toggle off if already selected, otherwise select it
-    setPreviewGear((prev) => ({
-      ...prev,
-      [category]: prev[category] === url ? null : url,
-    }));
+  function handleSelect(category: Category, item: WardrobeItem) {
+    setPreviewGear((prev) => {
+      if (category === 'base') {
+        return {
+          ...prev,
+          base: item.url,
+          baseId: item.id,
+          hat: null, // reset incompatible items
+          shirt: null,
+          wand: null,
+        };
+      }
+
+      return {
+        ...prev,
+        [category]: prev[category] === item.url ? null : item.url,
+      };
+    });
   }
 
   async function handleSave() {
@@ -124,6 +228,14 @@ export default function Wardrobe({
     }
   }
 
+  const filteredItems = ITEMS[activeTab].filter((item) => {
+    if (activeTab === 'base') return true;
+
+    if (!previewGear.baseId) return true; // show all if no base selected yet
+
+    return item.characterId === previewGear.baseId;
+  });
+
   return (
     <div className={styles.container}>
       {/* header */}
@@ -157,7 +269,7 @@ export default function Wardrobe({
 
       {/* items grid */}
       <div className={styles.grid}>
-        {ITEMS[activeTab].map((item) => {
+        {filteredItems.map((item) => {
           const isUnlocked = userLevel >= item.requiredLevel;
           const isEquipped = previewGear[activeTab] === item.url;
 
@@ -166,11 +278,11 @@ export default function Wardrobe({
               key={item.url}
               type="button"
               className={`
-                ${styles.itemButton}
-                ${isEquipped ? styles.itemEquipped : ''}
-                ${!isUnlocked ? styles.itemLocked : ''}
-              `}
-              onClick={() => isUnlocked && handleSelect(activeTab, item.url)}
+          ${styles.itemButton}
+          ${isEquipped ? styles.itemEquipped : ''}
+          ${!isUnlocked ? styles.itemLocked : ''}
+        `}
+              onClick={() => isUnlocked && handleSelect(activeTab, item)}
               disabled={!isUnlocked}
             >
               <Image
@@ -181,26 +293,10 @@ export default function Wardrobe({
                 className={!isUnlocked ? styles.itemImageLocked : styles.itemImage}
               />
               <span className={styles.itemLabel}>{item.label}</span>
-              {/* lock icon overlay for locked items */}
+
               {!isUnlocked && (
                 <div className={styles.lockOverlay}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <rect
-                      x="3"
-                      y="11"
-                      width="18"
-                      height="11"
-                      rx="2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M7 11V7C7 4.239 9.239 2 12 2C14.761 2 17 4.239 17 7V11"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
+                  {/* lock svg */}
                   <span>Lv. {item.requiredLevel}</span>
                 </div>
               )}
@@ -220,6 +316,7 @@ export default function Wardrobe({
             if (profile) {
               setPreviewGear({
                 base: profile.mon_url,
+                baseId: null,
                 hat: profile.mon_hat_url,
                 shirt: profile.mon_shirt_url,
                 wand: profile.mon_wand_url,
