@@ -252,9 +252,10 @@
 }
 
 .logoutButton {
-  background: none;
+  background: #c01111;
   border: none;
-  color: #ef4444;
+  color: white;
+  border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
   padding: 8px;
