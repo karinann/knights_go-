@@ -24,7 +24,7 @@ export default function main(): JSX.Element {
 
         <p className={styles.orgPrompt}>
           Registering an organization?{' '}
-          <Link href="/signup/org" className={styles.signupLink}>
+          <Link href="/clubpages/signup" className={styles.signupLink}>
             Sign up here
           </Link>
         </p>

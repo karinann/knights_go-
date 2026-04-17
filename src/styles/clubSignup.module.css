@@ -1,0 +1,64 @@
+.select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-input);
+  color: var(--color-text-body);
+  font-size: 16px;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-input);
+  color: var(--color-text-body);
+  font-size: 16px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.success {
+  color: #4caf50;
+  text-align: center;
+  margin: 10px 0;
+}
+
+/* /styles/clubSignup.module.css */
+.select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-input);
+  color: var(--color-text-body);
+  font-size: 16px;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-input);
+  color: var(--color-text-body);
+  font-size: 16px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-heading);
+  margin: 20px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-border);
+  font-family: var(--font-kavoon);
+}
+
+.sectionTitle:first-of-type {
+  margin-top: 0;
+}
