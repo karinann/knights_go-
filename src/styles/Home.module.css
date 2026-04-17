@@ -187,31 +187,43 @@
   padding: 0.5rem 0 1rem;
 }
 
-.scannerContainer {
-  width: 100;
-  height: 100;
-  margin: 0 auto;
+.scannerWrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
   overflow: hidden;
-  border-radius: 12px;
-  position: center + 25/2;
 }
 
-.scannerContainer video,
-.scannerContainer canvas 
-{
-  width: 100% !important;
-  height: 100% !important;
+/* Camera fills screen */
+.scannerWrapper video,
+.scannerWrapper canvas {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  color: rgba(0, 0, 0, 0.5);
 }
-.page {
+
+/* Dark overlay */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Transparent scan box */
+.scanBox {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  
+  border: 2px solid white;
+  border-radius: 12px;
+
+  /* THIS creates the "hole" effect */
+  box-shadow: 
+    0 0 0 9999px rgba(0, 0, 0, 0.6);
 }
 
 /* bottom nav */
