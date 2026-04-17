@@ -1,0 +1,113 @@
+.scannerContainer {
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* background: #2b2b2b; */
+}
+
+.scannerWrapper {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+
+  /* background: black; */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--color-text-body);
+  font-weight: 600;
+  margin-bottom: 2em;
+}
+
+.scannerWrapper video,
+.scannerWrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
+/* Optional scan frame */
+.scannerWrapper::after {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 2px dashed rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+/* Processing */
+.processing {
+  margin-top: 20px;
+  text-align: center;
+  color: white;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Result box */
+.result {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  white-space: pre-line;
+  max-width: 320px;
+}
+
+/* Success + error states */
+.success {
+  background: #4caf50;
+  color: white;
+}
+
+.error {
+  /* background: #f44336; */
+  /* opacity: 70%; */
+  color: white;
+}
+
+.resultMessage {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+/* Button */
+.resetButton {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #b4574c;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.resetButton:hover {
+  opacity: 0.9;
+}
