@@ -72,6 +72,7 @@ export class EventAttendanceService extends BaseService {
     xpAwarded: XpLevelUpInfo;
   }> {
     try {
+      let attendanceFn;
       const userId = await this.getCurrentUserId();
 
       // Get event details
@@ -92,7 +93,7 @@ export class EventAttendanceService extends BaseService {
         throw new Error('Cannot check in to past events');
       }
 
-      // Find the attendance record
+      // Find the attendance record if it exists
       const { data: attendance, error: attendanceError } = await this.supabase
         .from('event_attendance')
         .select('*')
@@ -100,11 +101,7 @@ export class EventAttendanceService extends BaseService {
         .eq('user_id', userId)
         .single();
 
-      if (attendanceError || !attendance) {
-        throw new Error('User is not registered for this event');
-      }
-
-      if (attendance.status === 'checked_in') {
+      if (attendance && attendance.status === 'checked_in') {
         throw new Error('User already checked in for this event');
       }
 
@@ -116,15 +113,31 @@ export class EventAttendanceService extends BaseService {
         bonus_xp: event.bonus_xp || 0,
       };
 
-      const { data, error } = await this.supabase
-        .from('event_attendance')
-        .update(updateData)
-        .eq('id', attendance.id)
-        .select()
-        .single();
+      // create attendance file if not there already
+      if (attendanceError) {
+        const attendanceMake = await this.registerUserForClubEvent(eventId);
+        const { data: updateAttend, error: updateErr } = await this.supabase
+          .from('event_attendance')
+          .update(updateData)
+          .eq('id', attendanceMake.id)
+          .select()
+          .single();
+        if (updateErr) throw updateErr;
+        if (!updateAttend) throw new Error('Failed to update attendance');
+        attendanceFn = attendanceMake; // final return val
+      } else {
+        // Update attendance record if it already exists
+        const { data, error } = await this.supabase
+          .from('event_attendance')
+          .update(updateData)
+          .eq('id', attendance.id)
+          .select()
+          .single();
 
-      if (error) throw error;
-      if (!data) throw new Error('Failed to update attendance');
+        if (error) throw error;
+        if (!data) throw new Error('Failed to update attendance');
+        attendanceFn = data;
+      }
 
       // Calculate total XP to give
       const totalXp = (event.base_xp || 10) + (event.bonus_xp || 0);
@@ -133,11 +146,11 @@ export class EventAttendanceService extends BaseService {
       const xpResult = await xPLevelUpService.awardXP(userId, totalXp);
 
       return {
-        attendance: data,
+        attendance: attendanceFn,
         xpAwarded: xpResult,
       };
     } catch (error) {
-      this.handleError(error, 'updateAttendanceForEvent');
+      this.handleError(error, 'eventAttendanceService.updateAttendanceForEvent');
       throw error;
     }
   }
