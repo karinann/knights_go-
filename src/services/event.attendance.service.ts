@@ -66,6 +66,37 @@ export class EventAttendanceService extends BaseService {
     }
   }
 
+  async unregisterUserFromClubEvent(eventId: number): Promise<void> {
+    try {
+      const userId = await this.getCurrentUserId();
+
+      const { data: existing, error: checkError } = await this.supabase
+        .from('event_attendance')
+        .select('id, status')
+        .eq('event_id', eventId)
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (checkError) throw checkError;
+      if (!existing) throw new Error('No registration found for this event');
+      if (existing.status === 'checked_in') {
+        throw new Error('Cannot unregister from an event you have already checked into');
+      }
+
+      const { error } = await this.supabase
+        .from('event_attendance')
+        .delete()
+        .select()
+        .single()
+        .eq('id', existing.id);
+
+      if (error) throw error;
+    } catch (error) {
+      this.handleError(error, 'unregisterUserFromClubEvent');
+      throw error;
+    }
+  }
+
   // Check in for an event
   async checkInEvent(eventId: number): Promise<{
     attendance: Attendance;
