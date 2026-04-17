@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { EventAttendanceService } from '@/services/event.attendance.service';
 import { QRScanner } from '../components/qr/qr_code';
-import styles from '../styles/home.module.css';
+import qrstyles from '../styles/qr.module.css';
+import shared from '../styles/auth.module.css';
 import BottomNav from '../components/BottomNav';
 
 export default function ScanPage() {
@@ -43,7 +44,7 @@ export default function ScanPage() {
       const res = await attendanceService.checkInEvent(eventId);
 
       // Build success message
-      let successMessage = `✅ Checked in successfully! Earned ${res.xpAwarded.newTotalXP} XP`;
+      let successMessage = `Checked in successfully! Earned ${res.xpAwarded.newTotalXP} XP`;
       if (res.xpAwarded.leveledUp) {
         successMessage += `\n🎉 Level up! Now level ${res.xpAwarded.newLevel}! 🎉`;
         if (res.xpAwarded.newTitle) {
@@ -78,13 +79,12 @@ export default function ScanPage() {
   };
 
   return (
-    <div className={styles.page}>
-      <div className={styles.scannerContainer}>
-        <h1 className={styles.title}>Event Check-in</h1>
-        <p className={styles.subtitle}>Scan the event QR code to check in and earn XP</p>
-
+    <div className={shared.wrapper}>
+      <div className={qrstyles.scannerContainer}>
+        <h1 className={shared.title}>Event Check-in</h1>
+        <p className={qrstyles.subtitle}>Scan the event QR code to check in and earn XP</p>
         {!result?.success && (
-          <div className={styles.scannerWrapper}>
+          <div className={qrstyles.scannerWrapper}>
             <QRScanner
               onScanSuccess={handleScan}
               onScanError={handleError}
@@ -94,17 +94,19 @@ export default function ScanPage() {
         )}
 
         {result && (
-          <div className={`${styles.result} ${result.success ? styles.success : styles.error}`}>
-            <div className={styles.resultMessage}>{result.message}</div>
-            <button onClick={resetScanner} className={styles.resetButton}>
+          <div
+            className={`${qrstyles.result} ${result.success ? qrstyles.success : qrstyles.error}`}
+          >
+            <div className={qrstyles.resultMessage}>{result.message}</div>
+            <button onClick={resetScanner} className={qrstyles.resetButton}>
               {result.success ? 'Scan Another QR' : 'Try Again'}
             </button>
           </div>
         )}
 
         {processing && (
-          <div className={styles.processing}>
-            <div className={styles.spinner} />
+          <div className={qrstyles.processing}>
+            <div className={qrstyles.spinner} />
             <p>Processing check-in...</p>
           </div>
         )}
