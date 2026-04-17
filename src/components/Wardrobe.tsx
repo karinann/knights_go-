@@ -214,10 +214,10 @@ export default function Wardrobe({
 
       // Update all gear
       await Promise.all([
-        updateMonBaseUrl(userId, previewGear.base ?? ''),
-        updateMonHatUrl(userId, previewGear.hat ?? ''),
-        updateMonShirtUrl(userId, previewGear.shirt ?? ''),
-        updateMonWandUrl(userId, previewGear.wand ?? ''),
+        updateMonBaseUrl(previewGear.base ?? ''),
+        updateMonHatUrl(previewGear.hat ?? ''),
+        updateMonShirtUrl(previewGear.shirt ?? ''),
+        updateMonWandUrl(previewGear.wand ?? ''),
       ]);
 
       onClose();
