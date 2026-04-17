@@ -2,8 +2,7 @@
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: #778c5a;
-  /* padding-bottom: calc(64px + env(safe-area-inset-bottom)); */
+  background: var(--color-bg-card);
   position: relative;
 }
 
@@ -50,6 +49,7 @@
   align-items: center;
   width: 350px;
 }
+
 .knightWrapper {
   position: relative;
   width: 350px;
@@ -57,16 +57,12 @@
   margin: 0 auto;
   flex-shrink: 0;
 }
+
 .layer {
   position: absolute;
   top: 0;
   left: 0;
   object-fit: contain;
-}
-
-.knightImage {
-  /* object-fit: contain; */
-  /* margin-bottom: 8px; */
 }
 
 .xpSection {
@@ -118,6 +114,23 @@
   border-top-left-radius: 10%;
   border-top-right-radius: 10%;
   overflow-y: auto;
+  min-height: calc(100dvh - 180px);
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cardExpanded {
+  transform: translateY(calc(-100dvh + 200px));
+}
+
+.pullTab {
+  width: 36px;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 2px;
+  margin: 0 auto 12px;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .sectionLabel {
@@ -188,12 +201,11 @@
 }
 
 .scannerContainer {
-  width: 100;
-  height: 100;
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 12px;
-  position: center + 25/2;
 }
 
 .scannerContainer video,
@@ -201,64 +213,4 @@
   width: 100% !important;
   height: 100% !important;
   object-fit: cover;
-  color: rgba(0, 0, 0, 0.5);
 }
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-
-/* bottom nav */
-/* .bottomNav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: var(--color-bg-card);
-  border-top: 1.5px solid var(--color-border);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  z-index: 100;
-}
-
-.navItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  color: var(--color-text-body);
-  text-decoration: none;
-  font-size: 10px;
-  min-width: 48px;
-}
-
-.navItemActive {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  color: var(--color-primary);
-  text-decoration: none;
-  font-size: 10px;
-  min-width: 48px;
-}
-
-.navItemQr {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  background: var(--color-primary);
-  border-radius: 50%;
-  color: var(--color-text-light);
-  text-decoration: none;
-  margin-bottom: 20px;
-  border: 3px solid var(--color-bg-card);
-} */

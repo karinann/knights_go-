@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -48,6 +48,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [showWardrobe, setShowWardrobe] = useState(false);
   const [userId, setUserId] = useState<number | null>(null);
+  const [cardExpanded, setCardExpanded] = useState(false);
   const [xpInfo, setXpInfo] = useState<XpInfoState>({
     currentXP: 0,
     currentLevel: 1,
@@ -59,6 +60,8 @@ export default function HomePage() {
     xpNeededForNextLevel: 100,
     progressToNextLevel: 0,
   });
+
+  const dragStartY = useRef(0);
 
   const { getMonUrls } = useUsers({ autoFetch: false });
   const { getUserLevelInfo, loading: xpLoading } = useXPLevelUp({ autoFetch: false });
@@ -211,6 +214,16 @@ export default function HomePage() {
     });
   }
 
+  function onTouchStart(e: React.TouchEvent) {
+    dragStartY.current = e.touches[0].clientY;
+  }
+
+  function onTouchEnd(e: React.TouchEvent) {
+    const delta = dragStartY.current - e.changedTouches[0].clientY;
+    if (delta > 30) setCardExpanded(true); // swiped up
+    if (delta < -30) setCardExpanded(false); // swiped down
+  }
+
   // Use XP info from the hook
   const level = xpInfo.currentLevel;
   const xpNeeded = xpInfo.xpNeededForNextLevel;
@@ -306,7 +319,14 @@ export default function HomePage() {
       </div>
 
       {/* parchment card */}
-      <div className={styles.card}>
+      <div
+        className={`${styles.card} ${cardExpanded ? styles.cardExpanded : ''}`}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        {/* pull tab handle */}
+        <div className={styles.pullTab} onClick={() => setCardExpanded((prev) => !prev)} />
+
         {showWardrobe ? (
           <Wardrobe
             previewGear={previewGear}
