@@ -1,23 +1,89 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from 'context/AuthContext';
 import { useEvents } from '@/hooks/useEvents';
+import { useAttendance } from '@/hooks/useAttendance';
+import { useClubs } from '@/hooks/useClubs';
 import BottomNav from '@/components/BottomNav';
 import Link from 'next/link';
 import styles from '../styles/events.module.css';
 
+interface Event {
+  id: number;
+  event_name: string;
+  event_date: string;
+  location: string | null;
+  description: string | null;
+  base_xp: number | null;
+  club_id: number;
+}
+
+interface ClubInfo {
+  id: number;
+  club_name: string;
+  logo_url: string | null;
+}
+
 export default function EventsPage() {
-  const { user } = useAuth(); // current logged in user
-  const [expandedId, setExpandedId] = useState<number | null>(null); // whether event card is expanded
+  const { user } = useAuth();
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [registeredEvents, setRegisteredEvents] = useState<Set<number>>(new Set());
+  const [registeringId, setRegisteringId] = useState<number | null>(null);
+  const [clubMap, setClubMap] = useState<Map<number, ClubInfo>>(new Map());
 
-  // autoFetch is marked ture when user is confirmed logged in
   const { events, loading, error } = useEvents({ autoFetch: !!user });
+  const {
+    registerUserForClubEvent,
+    isUserRegistered,
+    loading: attendanceLoading,
+  } = useAttendance({ autoFetch: false });
+  const { getAllClubsByParams } = useClubs({ autoFetch: false });
 
-  // toggles card open or closed, if clicked when open, close it (set to null)
+  // Fetch all clubs that the user has events for
+  useEffect(() => {
+    async function fetchClubsForEvents() {
+      if (!events.length) return;
+
+      // Get unique club IDs from events
+      const uniqueClubIds: number[] = [];
+      events.forEach((event) => {
+        if (!uniqueClubIds.includes(event.club_id)) {
+          uniqueClubIds.push(event.club_id);
+        }
+      });
+
+      // Fetch all clubs in one go (more efficient than fetching one by one)
+      const allClubs = await getAllClubsByParams({ limit: 100 });
+
+      // Create a map of club id to club info
+      const clubInfoMap = new Map<number, ClubInfo>();
+      uniqueClubIds.forEach((clubId) => {
+        const club = allClubs.find((c) => c.id === clubId);
+        if (club) {
+          clubInfoMap.set(clubId, {
+            id: club.id,
+            club_name: club.club_name,
+            logo_url: club.logo_url || null,
+          });
+        } else {
+          // Fallback if club not found
+          clubInfoMap.set(clubId, {
+            id: clubId,
+            club_name: 'Unknown Club',
+            logo_url: null,
+          });
+        }
+      });
+
+      setClubMap(clubInfoMap);
+    }
+
+    fetchClubsForEvents();
+  }, [events, getAllClubsByParams]);
+
   function toggleExpand(id: number) {
     setExpandedId((prev) => (prev === id ? null : id));
   }
 
-  // formats date: "Wednesday, Apr 15, 06:00 PM"
   function formatDate(dateString: string) {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -28,16 +94,49 @@ export default function EventsPage() {
     });
   }
 
+  async function handleRegister(eventId: number) {
+    setRegisteringId(eventId);
+    try {
+      await registerUserForClubEvent(eventId);
+      setRegisteredEvents((prev) => new Set(prev).add(eventId));
+      console.log('Successfully registered for event!');
+    } catch (err: any) {
+      console.error('Failed to register:', err.message);
+      alert(err.message || 'Failed to register for event. Please try again.');
+    } finally {
+      setRegisteringId(null);
+    }
+  }
+
+  async function checkRegistrationStatus(eventId: number) {
+    if (!user) return;
+
+    try {
+      const isRegistered = await isUserRegistered(eventId);
+      if (isRegistered) {
+        setRegisteredEvents((prev) => new Set(prev).add(eventId));
+      }
+    } catch (err) {
+      console.error('Failed to check registration status:', err);
+    }
+  }
+
+  useEffect(() => {
+    if (events.length > 0 && user) {
+      events.forEach((event) => {
+        checkRegistrationStatus(event.id);
+      });
+    }
+  }, [events, user]);
+
   return (
     <div className={styles.page}>
-      {/* Header - title and mange clubs button */}
       <div className={styles.header}>
         <div className={styles.headerTop}>
           <div>
             <h1 className={styles.title}>Events</h1>
             <p className={styles.subtitle}>From your clubs</p>
           </div>
-          {/* link to manage clubs page */}
           <Link href="/manageclubs" className={styles.manageButton}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path
@@ -52,15 +151,10 @@ export default function EventsPage() {
         </div>
       </div>
 
-      {/* main content area */}
       <div className={styles.content}>
-        {/* loading events */}
         {loading && <p className={styles.hint}>Loading events...</p>}
-
-        {/* if service call fails: display error */}
         {error && <p className={styles.hint}>Error: {error}</p>}
 
-        {/* empty state: no upcoming events */}
         {!loading && !error && events.length === 0 && (
           <div className={styles.emptyState}>
             <p className={styles.emptyTitle}>No upcoming events</p>
@@ -71,25 +165,23 @@ export default function EventsPage() {
           </div>
         )}
 
-        {/* events list displayed after loading is complete */}
         {!loading &&
-          events.map((event) => {
+          events.map((event: Event) => {
             const isExpanded = expandedId === event.id;
+            const isRegistered = registeredEvents.has(event.id);
+            const isRegistering = registeringId === event.id;
+            const club = clubMap.get(event.club_id);
+            const clubName = club?.club_name || 'Loading...';
+            const clubLogo = club?.logo_url;
 
             return (
-              <div
-                key={event.id}
-                // swap to expanded when selected
-                className={isExpanded ? styles.cardExpanded : styles.card}
-              >
-                {/* card header */}
+              <div key={event.id} className={isExpanded ? styles.cardExpanded : styles.card}>
                 <button
                   type="button"
                   className={styles.cardHeader}
                   onClick={() => toggleExpand(event.id)}
                 >
                   <div className={styles.cardLeft}>
-                    {/* dd/mm abbreviation */}
                     <div className={styles.dateBadge}>
                       <span className={styles.dateDay}>{new Date(event.event_date).getDate()}</span>
                       <span className={styles.dateMonth}>
@@ -98,7 +190,28 @@ export default function EventsPage() {
                     </div>
                     <div className={styles.cardInfo}>
                       <p className={styles.eventName}>{event.event_name}</p>
-                      {/* location shown in collapsed view for quick reference */}
+                      {/* Club name with icon */}
+                      <div className={styles.clubInfo}>
+                        {clubLogo ? (
+                          <img src={clubLogo} alt={clubName} className={styles.clubLogo} />
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <path
+                              d="M3 9L12 3L21 9L12 15L3 9Z"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M5 11V17L12 21L19 17V11"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                        <span className={styles.clubName}>{clubName}</span>
+                      </div>
                       {event.location && <p className={styles.locationPreview}>{event.location}</p>}
                     </div>
                   </div>
@@ -118,10 +231,8 @@ export default function EventsPage() {
                   </svg>
                 </button>
 
-                {/* expanded details */}
                 {isExpanded && (
                   <div className={styles.cardDetails}>
-                    {/* full date and time */}
                     <div className={styles.detailRow}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <rect
@@ -143,7 +254,25 @@ export default function EventsPage() {
                       <span>{formatDate(event.event_date)}</span>
                     </div>
 
-                    {/* building and room number  */}
+                    {/* Club in expanded view */}
+                    <div className={styles.detailRow}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M3 9L12 3L21 9L12 15L3 9Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M5 11V17L12 21L19 17V11"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span>{clubName}</span>
+                    </div>
+
                     {event.location && (
                       <div className={styles.detailRow}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -158,7 +287,6 @@ export default function EventsPage() {
                       </div>
                     )}
 
-                    {/* optional event description */}
                     {event.description && (
                       <div className={styles.detailRow}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -173,9 +301,43 @@ export default function EventsPage() {
                       </div>
                     )}
 
-                    {/* experience reward */}
                     {event.base_xp && (
                       <div className={styles.xpBadge}>+{event.base_xp} XP for attending</div>
+                    )}
+
+                    {user && (
+                      <div className={styles.registerSection}>
+                        {isRegistered ? (
+                          <div className={styles.registeredBadge}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                              <path
+                                d="M20 6L9 17L4 12"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            <span>Registered for this event</span>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleRegister(event.id)}
+                            disabled={isRegistering || attendanceLoading}
+                            className={styles.registerButton}
+                          >
+                            {isRegistering ? (
+                              <>
+                                <span className={styles.spinner}></span>
+                                Registering...
+                              </>
+                            ) : (
+                              'Register for Event'
+                            )}
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 )}

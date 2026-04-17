@@ -96,7 +96,7 @@ export function useAttendance(options: UseAttendanceOptions = {}): UseAttendance
       setLoading(true);
       setError(null);
       try {
-        const result = await eventAttendanceService.checkInToEventAndAwardXP(eventId);
+        const result = await eventAttendanceService.checkInEvent(eventId);
         // Refresh attendances list after check-in
         await fetchAttendances();
         return result;
