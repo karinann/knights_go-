@@ -21,6 +21,8 @@ export interface UseAttendanceReturn {
 
   // Registers a user for an event
   registerUserForClubEvent: (eventId: number) => Promise<Attendance>;
+  // Unregisters a user from an event
+  unregisterUserFromClubEvent: (eventId: number) => Promise<Attendance>;
 
   // Checks into event and awards XP (all in one call!!!)
   checkInEvent: (eventId: number) => Promise<{
@@ -72,6 +74,26 @@ export function useAttendance(options: UseAttendanceOptions = {}): UseAttendance
       setError(null);
       try {
         const attendance = await eventAttendanceService.registerUserForClubEvent(eventId);
+        // Refresh attendances list if needed
+        await fetchAttendances();
+        return attendance;
+      } catch (err: any) {
+        setError(err.message);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchAttendances],
+  );
+
+  // Unregister user from club event
+  const unregisterUserFromClubEvent = useCallback(
+    async (eventId: number): Promise<Attendance> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const attendance = await eventAttendanceService.unregisterUserFromClubEvent(eventId);
         // Refresh attendances list if needed
         await fetchAttendances();
         return attendance;
@@ -172,6 +194,7 @@ export function useAttendance(options: UseAttendanceOptions = {}): UseAttendance
     error,
     refetch,
     registerUserForClubEvent,
+    unregisterUserFromClubEvent,
     checkInEvent,
     getEventRegistrations,
     isUserRegistered,

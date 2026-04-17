@@ -259,6 +259,28 @@
   height: 18px;
 }
 
+.unregisterButton {
+  /* mirror your registerButton styles, but muted */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.unregisterButton:hover {
+  opacity: 1;
+  border-color: var(--color-danger, #e53e3e);
+  color: var(--color-danger, #e53e3e);
+}
+
 /* Spinner animation for loading state */
 .spinner {
   display: inline-block;
