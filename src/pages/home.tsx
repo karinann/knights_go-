@@ -7,6 +7,7 @@ import createClient from 'lib/supabase';
 import BottomNav from '@/components';
 import Wardrobe from '@components/Wardrobe';
 import { useUsers } from '@/hooks/useUsers';
+import { useXPLevelUp } from '@/hooks/useXPLevelUp';
 import styles from '../styles/home.module.css';
 
 interface Event {
@@ -23,9 +24,18 @@ interface UserProfile {
   mon_shirt_url: string | null;
   mon_hat_url: string | null;
   mon_wand_url: string | null;
-  experience_points: number | null;
-  experience_level: number | null;
-  club_ids: string[] | null;
+}
+
+interface XpInfoState {
+  currentXP: number;
+  currentLevel: number;
+  currentTitle: string | null;
+  currentLevelMinXP: number;
+  currentLevelMaxXP: number | null;
+  nextLevel: number | null;
+  nextTitle: string | null;
+  xpNeededForNextLevel: number | null;
+  progressToNextLevel: number;
 }
 
 export default function HomePage() {
@@ -34,9 +44,24 @@ export default function HomePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [nextEvent, setNextEvent] = useState<Event | null>(null);
   const [eventsAttended, setEventsAttended] = useState<number>(0);
+  const [clubCount, setClubCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [showWardrobe, setShowWardrobe] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [xpInfo, setXpInfo] = useState<XpInfoState>({
+    currentXP: 0,
+    currentLevel: 1,
+    currentTitle: null,
+    currentLevelMinXP: 0,
+    currentLevelMaxXP: 100,
+    nextLevel: null,
+    nextTitle: null,
+    xpNeededForNextLevel: 100,
+    progressToNextLevel: 0,
+  });
+
   const { getMonUrls } = useUsers({ autoFetch: false });
+  const { getUserLevelInfo, loading: xpLoading } = useXPLevelUp({ autoFetch: false });
 
   const [previewGear, setPreviewGear] = useState<{
     base: string | null;
@@ -72,51 +97,84 @@ export default function HomePage() {
     }
   }, [profile]);
 
+  // Fetch XP info when userId is available
+  useEffect(() => {
+    async function fetchXPInfo() {
+      if (userId) {
+        try {
+          const info = await getUserLevelInfo(userId);
+          setXpInfo({
+            currentXP: info.currentXP,
+            currentLevel: info.currentLevel,
+            currentTitle: info.currentTitle,
+            currentLevelMinXP: info.currentLevelMinXP,
+            currentLevelMaxXP: info.currentLevelMaxXP,
+            nextLevel: info.nextLevel,
+            nextTitle: info.nextTitle,
+            xpNeededForNextLevel: info.xpNeededForNextLevel,
+            progressToNextLevel: info.progressToNextLevel,
+          });
+        } catch (err) {
+          console.error('Failed to fetch XP info:', err);
+        }
+      }
+    }
+    fetchXPInfo();
+  }, [userId, getUserLevelInfo]);
+
   async function fetchData() {
     const supabase = createClient();
 
-    // fetch user profile
+    // First get the user's internal ID
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('user_id', user?.id)
+      .single();
+
+    if (userError || !userData) {
+      console.error('Error fetching user data:', userError);
+      setLoading(false);
+      return;
+    }
+
+    const internalUserId = userData.id;
+    setUserId(internalUserId);
+
+    // Fetch user profile
     const { data: profileData } = await supabase
       .from('users')
-      .select(
-        'first_name, mon_url, mon_shirt_url, mon_hat_url, mon_wand_url, experience_points, experience_level, club_ids',
-      )
+      .select('first_name, mon_url, mon_shirt_url, mon_hat_url, mon_wand_url')
       .eq('user_id', user?.id)
       .single();
 
     if (profileData) {
       setProfile(profileData);
-      // also fetch mon urls through the hook to keep things in sync
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('user_id', user?.id)
-        .single();
 
-      if (userData) {
-        const monUrls = await getMonUrls();
-        setPreviewGear({
-          base: monUrls.mon_url,
-          baseId: null,
-          hat: monUrls.mon_hat_url,
-          shirt: monUrls.mon_shirt_url,
-          wand: monUrls.mon_wand_url,
-        });
-      }
+      // Fetch mon urls through the hook to keep things in sync
+      const monUrls = await getMonUrls();
+      setPreviewGear({
+        base: monUrls.mon_url,
+        baseId: null,
+        hat: monUrls.mon_hat_url,
+        shirt: monUrls.mon_shirt_url,
+        wand: monUrls.mon_wand_url,
+      });
     }
 
-    // fetch user profile
-    // const { data: profileData } = await supabase
-    //   .from('users')
-    //   .select(
-    //     'first_name, mon_url, mon_shirt_url, mon_hat_url, mon_wand_url, experience_points, experience_level, club_ids',
-    //   )
-    //   .eq('user_id', user?.id)
-    //   .single();
+    // Fetch club count from club_memberships table
+    const { count: clubMembershipCount, error: clubError } = await supabase
+      .from('club_memberships')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', internalUserId);
 
-    // if (profileData) setProfile(profileData);
+    if (clubError) {
+      console.error('Error fetching club count:', clubError);
+    } else {
+      setClubCount(clubMembershipCount ?? 0);
+    }
 
-    // fetch next upcoming event
+    // Fetch next upcoming event
     const { data: eventData } = await supabase
       .from('events')
       .select('*')
@@ -127,13 +185,19 @@ export default function HomePage() {
 
     if (eventData) setNextEvent(eventData);
 
-    // fetch number of events attended by this user
-    const { count } = await supabase
+    // Fetch number of events attended by this user (checked in events only)
+    const { count: attendanceCount, error: attendanceError } = await supabase
       .from('event_attendance')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', user?.id);
+      .eq('user_id', internalUserId)
+      .eq('status', 'checked_in');
 
-    setEventsAttended(count ?? 0);
+    if (attendanceError) {
+      console.error('Error fetching attendance count:', attendanceError);
+    } else {
+      setEventsAttended(attendanceCount ?? 0);
+    }
+
     setLoading(false);
   }
 
@@ -147,11 +211,12 @@ export default function HomePage() {
     });
   }
 
-  const xp = profile?.experience_points ?? 0;
-  const level = profile?.experience_level ?? 1;
-  const xpIntoLevel = xp % 100;
-  const xpPercent = Math.round((xpIntoLevel / 100) * 100);
-  const clubCount = profile?.club_ids?.length ?? 0;
+  // Use XP info from the hook
+  const level = xpInfo.currentLevel;
+  const xpNeeded = xpInfo.xpNeededForNextLevel;
+  const progressPercent = xpInfo.progressToNextLevel;
+  const currentTitle = xpInfo.currentTitle;
+  const nextTitle = xpInfo.nextTitle;
 
   return (
     <div className={styles.page}>
@@ -162,9 +227,6 @@ export default function HomePage() {
           <div onClick={() => setShowWardrobe(true)} className={styles.iconButton}>
             <Image src="/icons/closet.png" alt="Closet" width={35} height={35} />
           </div>
-          {/* <Link href="/profile/knight" className={styles.iconButton}>
-            <Image src="/icons/closet.png" alt="Closet" width={35} height={35} />
-          </Link> */}
           <Link href="/qr/scan" className={styles.iconButton}>
             <Image src="/icons/qr-icon.png" alt="QR Code Scanner" width={20} height={20} />
           </Link>
@@ -182,16 +244,6 @@ export default function HomePage() {
 
         {/* knight overlaid on backdrop */}
         <div className={styles.knightOverlay}>
-          {/* {profile?.mon_url && (
-            <Image
-              src={profile.mon_url}
-              alt="Your knight"
-              width={350}
-              height={350}
-              className={styles.knightImage}
-              priority
-            />
-          )} */}
           {previewGear.base && (
             <>
               <Image
@@ -230,16 +282,24 @@ export default function HomePage() {
               )}
             </>
           )}
-          {/* <div className={styles.knightWrapper}></div> */}
 
           {/* xp bar sits just below knight */}
           <div className={styles.xpSection}>
             <div className={styles.xpLabel}>
-              <span className={styles.levelBadge}>Lv. {level}</span>
-              <span className={styles.xpText}>{xpIntoLevel} / 100 XP</span>
+              <span className={styles.levelBadge}>
+                Lv. {level} {currentTitle && `- ${currentTitle}`}
+              </span>
+              <span className={styles.xpText}>
+                {xpNeeded && xpNeeded > 0
+                  ? `${xpNeeded} XP to ${nextTitle || 'next level'}`
+                  : 'Max level!'}
+              </span>
             </div>
             <div className={styles.xpBarTrack}>
-              <div className={styles.xpBarFill} style={{ width: `${xpPercent}%` }} />
+              <div
+                className={styles.xpBarFill}
+                style={{ width: `${Math.min(progressPercent, 100)}%` }}
+              />
             </div>
           </div>
         </div>
@@ -252,10 +312,10 @@ export default function HomePage() {
             previewGear={previewGear}
             setPreviewGear={setPreviewGear}
             profile={profile}
-            userLevel={profile?.experience_level ?? 1}
+            userLevel={level}
             onClose={() => setShowWardrobe(false)}
           />
-        ) : loading ? (
+        ) : loading || xpLoading ? (
           <p className={styles.hint}>Loading...</p>
         ) : (
           <>
