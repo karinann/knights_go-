@@ -77,15 +77,19 @@ export class ClubService extends BaseService {
       // Get current user
       const currentUserID = await this.getCurrentUserId();
 
-      // // Get user info
-      // const { data: user, error: userError } = await this.supabase
-      //   .from('users')
-      //   .select('name')
-      //   .eq('id', currentUserID)
-      //   .single();
+      // Get user info
+      const { data: user, error: userError } = await this.supabase
+        .from('users')
+        .select('user_type')
+        .eq('id', currentUserID)
+        .single();
 
-      // // if user not found, throuw error
-      // if (userError) throw new Error('User not found');
+      // if user not found, throuw error
+      if (userError) throw new Error('User not found');
+
+      if (user.user_type !== 'club') {
+        throw new Error("Can't create a club unless you are a club!");
+      }
 
       // Create club
       const { data: club, error } = await this.supabase
