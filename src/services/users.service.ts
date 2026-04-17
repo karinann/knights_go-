@@ -102,13 +102,9 @@ export class UserService extends BaseService {
 
   // Get clubs that the user is in; returns the user's role and club name, desc,
   // category, and logo_url
-  async getMyClubs(userId: number): Promise<RoleWithClub[]> {
+  async getMyClubs(): Promise<RoleWithClub[]> {
     try {
       const currentUserID = await this.getCurrentUserId();
-
-      if (currentUserID !== userId) {
-        throw new Error('You can only get your own clubs!');
-      }
 
       const { data: memberships, error: membershipError } = await this.supabase
         .from('club_memberships')
@@ -123,7 +119,7 @@ export class UserService extends BaseService {
           )
         `,
         )
-        .eq('user_id', userId);
+        .eq('user_id', currentUserID);
 
       if (membershipError) throw membershipError;
 
@@ -145,18 +141,14 @@ export class UserService extends BaseService {
   }
 
   // Update profile picture (avatar_url)
-  async updateProfilePicture(userId: number, pfpUrl: string): Promise<User> {
+  async updateProfilePicture(pfpUrl: string): Promise<User> {
     try {
       const currentUserID = await this.getCurrentUserId();
-
-      if (currentUserID !== userId) {
-        throw new Error('You can only dress your own Mon!');
-      }
 
       const { data, error } = await this.supabase
         .from('users')
         .update({ avatar_url: pfpUrl })
-        .eq('id', userId)
+        .eq('id', currentUserID)
         .select()
         .single();
 
@@ -169,18 +161,14 @@ export class UserService extends BaseService {
   }
 
   // Update Base Mon
-  async updateMonBaseUrl(userId: number, monUrl: string): Promise<User> {
+  async updateMonBaseUrl(monUrl: string): Promise<User> {
     try {
       const currentUserID = await this.getCurrentUserId();
-
-      if (currentUserID !== userId) {
-        throw new Error('You can only dress your own Mon!');
-      }
 
       const { data, error } = await this.supabase
         .from('users')
         .update({ mon_url: monUrl })
-        .eq('id', userId)
+        .eq('id', currentUserID)
         .select()
         .single();
 
@@ -193,18 +181,14 @@ export class UserService extends BaseService {
   }
 
   // Update hat for mon
-  async updateMonHatUrl(userId: number, hatUrl: string): Promise<User> {
+  async updateMonHatUrl(hatUrl: string): Promise<User> {
     try {
       const currentUserID = await this.getCurrentUserId();
-
-      if (currentUserID !== userId) {
-        throw new Error('You can only dress your own Mon!');
-      }
 
       const { data, error } = await this.supabase
         .from('users')
         .update({ mon_hat_url: hatUrl })
-        .eq('id', userId)
+        .eq('id', currentUserID)
         .select()
         .single();
 
@@ -217,18 +201,14 @@ export class UserService extends BaseService {
   }
 
   // Update shirt of mon
-  async updateMonShirtUrl(userId: number, shirtUrl: string): Promise<User> {
+  async updateMonShirtUrl(shirtUrl: string): Promise<User> {
     try {
       const currentUserID = await this.getCurrentUserId();
-
-      if (currentUserID !== userId) {
-        throw new Error('You can only dress your own Mon!');
-      }
 
       const { data, error } = await this.supabase
         .from('users')
         .update({ mon_shirt_url: shirtUrl })
-        .eq('id', userId)
+        .eq('id', currentUserID)
         .select()
         .single();
 
@@ -241,18 +221,14 @@ export class UserService extends BaseService {
   }
 
   // Update wand of mon
-  async updateMonWandUrl(userId: number, wandUrl: string): Promise<User> {
+  async updateMonWandUrl(wandUrl: string): Promise<User> {
     try {
       const currentUserID = await this.getCurrentUserId();
-
-      if (currentUserID !== userId) {
-        throw new Error('You can only dress your own Mon!');
-      }
 
       const { data, error } = await this.supabase
         .from('users')
         .update({ mon_wand_url: wandUrl })
-        .eq('id', userId)
+        .eq('id', currentUserID)
         .select()
         .single();
 
@@ -265,18 +241,14 @@ export class UserService extends BaseService {
   }
 
   // Get all MON URLs for a user
-  async getMonUrls(userId: number): Promise<MonDressUpUrls> {
+  async getMonUrls(): Promise<MonDressUpUrls> {
     try {
       const currentUserID = await this.getCurrentUserId();
-
-      if (currentUserID !== userId) {
-        throw new Error('You can only dress your own Mon!');
-      }
 
       const { data, error } = await this.supabase
         .from('users')
         .select('mon_url, mon_hat_url, mon_shirt_url, mon_wand_url')
-        .eq('id', userId)
+        .eq('id', currentUserID)
         .single();
 
       if (error) throw error;

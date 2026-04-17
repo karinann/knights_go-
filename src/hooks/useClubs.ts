@@ -24,8 +24,8 @@ export interface UseClubsReturn {
   updateClub: (id: number, updates: ClubUpdate) => Promise<Club | null>;
   deleteClub: (id: number) => Promise<boolean>;
   getAllClubsByParams: (params?: SearchClubsParams) => Promise<Club[]>;
-  updateClubSprite: (userId: number, clubId: number, spriteUrl: string) => Promise<Club>;
-  updateClubLogo: (userId: number, clubId: number, logoUrl: string) => Promise<Club>;
+  updateClubSprite: (clubId: number, spriteUrl: string) => Promise<Club>;
+  updateClubLogo: (clubId: number, logoUrl: string) => Promise<Club>;
 }
 export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
   const { limit = 10, autoFetch = true } = options;
@@ -94,28 +94,22 @@ export function useClubs(options: UseClubsOptions = {}): UseClubsReturn {
 
   // ── CHANGED START ──
   // Added missing updateClubSprite — was in the return and interface but never defined
-  const updateClubSprite = useCallback(
-    async (userId: number, clubId: number, spriteUrl: string): Promise<Club> => {
-      const updated = await clubService.updateClubSprite(userId, clubId, spriteUrl);
-      // Patch local state so UI updates immediately without a refetch
-      setClubs((prev) => prev.map((club) => (club.id === clubId ? updated : club)));
-      return updated;
-    },
-    [],
-  );
+  const updateClubSprite = useCallback(async (clubId: number, spriteUrl: string): Promise<Club> => {
+    const updated = await clubService.updateClubSprite(clubId, spriteUrl);
+    // Patch local state so UI updates immediately without a refetch
+    setClubs((prev) => prev.map((club) => (club.id === clubId ? updated : club)));
+    return updated;
+  }, []);
   // ── CHANGED END ──
 
   // ── CHANGED START ──
   // Added missing updateClubLogo — was in the return and interface but never defined
-  const updateClubLogo = useCallback(
-    async (userId: number, clubId: number, logoUrl: string): Promise<Club> => {
-      const updated = await clubService.updateClubLogo(userId, clubId, logoUrl);
-      // Patch local state so UI updates immediately without a refetch
-      setClubs((prev) => prev.map((club) => (club.id === clubId ? updated : club)));
-      return updated;
-    },
-    [],
-  );
+  const updateClubLogo = useCallback(async (clubId: number, logoUrl: string): Promise<Club> => {
+    const updated = await clubService.updateClubLogo(clubId, logoUrl);
+    // Patch local state so UI updates immediately without a refetch
+    setClubs((prev) => prev.map((club) => (club.id === clubId ? updated : club)));
+    return updated;
+  }, []);
   // ── CHANGED END ──
 
   useEffect(() => {
