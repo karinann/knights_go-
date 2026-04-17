@@ -33,6 +33,7 @@ export default function EventsPage() {
   const { events, loading, error } = useEvents({ autoFetch: !!user });
   const {
     registerUserForClubEvent,
+    unregisterUserFromClubEvent,
     isUserRegistered,
     loading: attendanceLoading,
   } = useAttendance({ autoFetch: false });
@@ -103,6 +104,22 @@ export default function EventsPage() {
     } catch (err: any) {
       console.error('Failed to register:', err.message);
       alert(err.message || 'Failed to register for event. Please try again.');
+    } finally {
+      setRegisteringId(null);
+    }
+  }
+
+  async function handleUnregister(eventId: number) {
+    setRegisteringId(eventId);
+    try {
+      await unregisterUserFromClubEvent(eventId); // add this from your useAttendance hook
+      setRegisteredEvents((prev) => {
+        const next = new Set(prev);
+        next.delete(eventId);
+        return next;
+      });
+    } catch (err: any) {
+      alert(err.message || 'Failed to unregister. Please try again.');
     } finally {
       setRegisteringId(null);
     }
@@ -308,33 +325,40 @@ export default function EventsPage() {
                     {user && (
                       <div className={styles.registerSection}>
                         {isRegistered ? (
-                          <div className={styles.registeredBadge}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                              <path
-                                d="M20 6L9 17L4 12"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                            <span>Registered for this event</span>
-                          </div>
-                        ) : (
                           <button
                             type="button"
-                            onClick={() => handleRegister(event.id)}
+                            onClick={() => handleUnregister(event.id)}
                             disabled={isRegistering || attendanceLoading}
-                            className={styles.registerButton}
+                            className={styles.unregisterButton}
                           >
                             {isRegistering ? (
                               <>
-                                <span className={styles.spinner}></span>
-                                Registering...
+                                <span className={styles.spinner} />
+                                Removing...
                               </>
                             ) : (
-                              'Register for Event'
+                              <>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                  <path
+                                    d="M20 6L9 17L4 12"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                                Interested — tap to remove
+                              </>
                             )}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className={styles.registerButton}
+                            onClick={() => handleRegister(event.id)}
+                            disabled={isRegistering || attendanceLoading}
+                          >
+                            Interested in this event?
                           </button>
                         )}
                       </div>
